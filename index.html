@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ORT Control — Un videojuego de admisiones universitarias inspirado en Papers, Please.">
+  <title>ORT Control</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Contenedor del juego — siempre 1600×900 px, escalado por JS -->
+  <div id="game-container">
+
+    <!-- ═══════════════════════════════════════
+         PANTALLA: INICIO
+    ═══════════════════════════════════════ -->
+    <div id="screen-start" class="screen active">
+      <img src="assets/pantallas/inicio.png" class="screen-bg" alt="Pantalla de inicio" draggable="false">
+
+      <!-- Los botones se superponen en los espacios vacíos de la imagen -->
+      <nav class="start-nav" aria-label="Menú principal">
+        <button class="menu-btn" id="btn-play" aria-label="Jugar">JUGAR</button>
+        <button class="menu-btn" id="btn-credits" aria-label="Créditos">CRÉDITOS</button>
+      </nav>
+
+      <!-- Overlay de Créditos -->
+      <div id="credits-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Créditos">
+        <div class="credits-box">
+          <h1 id="credits-title"></h1>
+          <p id="credits-subtitle"></p>
+          <p id="credits-subject"></p>
+          <p id="credits-institution"></p>
+          <div id="credits-authors" class="authors-list"></div>
+          <p id="credits-ack"></p>
+          <button class="menu-btn btn-inline" id="btn-close-credits">VOLVER</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PANTALLA: BOLETÍN DIARIO
+    ═══════════════════════════════════════ -->
+    <div id="screen-bulletin" class="screen hidden">
+      <img src="assets/pantallas/boletin.png" class="screen-bg" alt="Boletín diario" draggable="false">
+
+      <!-- Textos superpuestos sobre la plantilla gráfica del boletín -->
+      <div id="bulletin-overlay">
+        <span id="bulletin-day-num">1</span>
+        <span id="bulletin-date-val">18/07/2026</span>
+        <p id="bulletin-rule"></p>
+        <ul id="bulletin-obs"></ul>
+        <ul id="bulletin-reminders"></ul>
+        <div id="bulletin-example"><p id="bulletin-lore"></p><div id="bulletin-new-docs"></div></div>
+      </div>
+
+      <button class="action-btn" id="btn-start-day">COMENZAR JORNADA ▶</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PANTALLA: GAMEPLAY PRINCIPAL
+    ═══════════════════════════════════════ -->
+    <div id="screen-game" class="screen hidden">
+      <img src="assets/pantallas/pantalla-principal.jpg" class="screen-bg" alt="Escritorio de admisiones" draggable="false">
+
+      <!-- HUD Superior -->
+      <div id="game-hud">
+        <span id="hud-day">DÍA 1</span>
+        <span id="hud-date">18/07/2026</span>
+      </div>
+
+      <!-- ─── ZONA IZQUIERDA: Personaje ─── -->
+      <div id="character-area" aria-label="Zona del personaje"></div>
+
+      <!-- ─── DIÁLOGO ─── -->
+      <div id="dialogue-area" aria-label="Ventana de diálogo">
+        <div id="chat-history" role="log" aria-live="polite"></div>
+        <div class="chat-controls">
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Escribe tu pregunta..."
+            autocomplete="off"
+            aria-label="Campo de pregunta"
+            maxlength="120"
+          >
+          <button id="chat-send" aria-label="Enviar pregunta">PREGUNTAR</button>
+        </div>
+        <div id="quick-questions" aria-label="Preguntas rápidas"></div>
+      </div>
+
+      <!-- ─── BANDEJA DE DOCUMENTOS ─── -->
+      <div id="document-tray" aria-label="Bandeja de documentos"></div>
+
+      <!-- ─── ZONA DERECHA: Inspección ─── -->
+      <div id="inspection-area" aria-label="Área de inspección documental"></div>
+
+      <!-- Lista visible de documentos requeridos y entregados -->
+      <aside id="document-requirements" aria-label="Control de documentación"></aside>
+
+      <!-- Evidencias seleccionadas para comparar -->
+      <aside id="evidence-panel" aria-label="Evidencias seleccionadas">
+        <h3>EVIDENCIAS</h3>
+        <div id="evidence-list">Seleccione hasta 2 datos.</div>
+        <button id="btn-compare-evidence" type="button">COMPARAR</button>
+      </aside>
+
+      <!-- Cuaderno rojo de reglas -->
+      <button id="rulebook-toggle" type="button" aria-label="Abrir cuaderno de reglas" title="Cuaderno de reglas"></button>
+      <div id="rulebook-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Cuaderno de reglas">
+        <div class="rulebook-paper">
+          <header>
+            <h2>REGLAMENTO DE ADMISIÓN</h2>
+            <button id="btn-close-rulebook" type="button">X</button>
+          </header>
+          <p id="rulebook-day-title"></p>
+          <div id="rulebook-rules"></div>
+          <p class="rulebook-help">Seleccione una regla y un dato de un documento, o dos datos, y pulse COMPARAR.</p>
+        </div>
+      </div>
+
+      <!-- ─── CAPA DE DOCUMENTOS ─── -->
+      <div id="document-layer"></div>
+
+      <!-- Instrucciones breves del día -->
+      <div id="day-instructions" class="hidden" role="dialog" aria-modal="true" aria-label="Instrucciones de revisión">
+        <div class="instructions-panel">
+          <h2>INSTRUCCIONES DEL DÍA</h2>
+          <p id="instructions-context"></p>
+          <ol id="instructions-list"></ol>
+          <button id="btn-close-instructions" class="action-btn">ENTENDIDO ▶</button>
+        </div>
+      </div>
+
+      <!-- Citación inmediata por decisión incorrecta -->
+      <div id="citation-notice" class="hidden" role="alertdialog" aria-modal="true" aria-label="Error de inspección">
+        <div class="citation-paper">
+          <h2>ERROR DE INSPECCIÓN</h2>
+          <p id="citation-message"></p>
+          <button id="btn-dismiss-citation" class="action-btn">ENTENDIDO ▶</button>
+        </div>
+      </div>
+
+      <!-- ─── SELLOS DE DECISIÓN DESPLEGABLES ─── -->
+      <button id="decision-drawer-toggle" type="button" aria-expanded="false">SELLOS ▲</button>
+      <div id="decision-controls" class="decision-collapsed">
+        <button class="stamp-btn" id="btn-approve" aria-label="Aprobar">
+          <img src="assets/sellos/aporbado.png" alt="Sello Aprobado" draggable="false">
+          <span class="stamp-date"></span>
+        </button>
+        <button class="stamp-btn" id="btn-deny" aria-label="Denegar">
+          <img src="assets/sellos/denegado.png" alt="Sello Denegado" draggable="false">
+          <span class="stamp-date"></span>
+        </button>
+      </div>
+
+      <!-- Notificación de decisión -->
+      <div id="turn-notification" class="hidden" role="alert" aria-live="assertive"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PANTALLA: RESUMEN DEL DÍA
+    ═══════════════════════════════════════ -->
+    <div id="screen-end-day" class="screen hidden">
+      <div id="end-day-summary">
+        <h2>FIN DE LA JORNADA</h2>
+        <ul id="summary-list"></ul>
+        <p id="summary-score"></p>
+        <div id="receptionist-lore"></div>
+        <div id="ending-preview"></div>
+        <button class="action-btn" id="btn-next-day">SIGUIENTE DÍA ▶</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PANTALLA: PAUSA (overlay)
+    ═══════════════════════════════════════ -->
+    <div id="screen-pause" class="screen hidden pause-overlay" role="dialog" aria-modal="true" aria-label="Menú de pausa">
+      <img src="assets/pantallas/pausa.png" class="screen-bg" alt="Pantalla de pausa" draggable="false">
+
+      <div class="pause-menu">
+        <button class="menu-btn btn-inline" id="btn-resume">CONTINUAR</button>
+        <button class="menu-btn btn-inline" id="btn-restart-day">REINICIAR DÍA</button>
+        <button class="menu-btn btn-inline" id="btn-main-menu">MENÚ PRINCIPAL</button>
+        <button class="menu-btn btn-inline" id="btn-quit">SALIR</button>
+        <button class="menu-btn btn-inline ai-config-btn" id="btn-configure-ai">CONFIGURAR IA</button>
+      </div>
+    </div>
+
+  </div><!-- /#game-container -->
+
+  <!-- Scripts — orden de carga importa (data primero, app al final) -->
+  <script src="js/data.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="js/documents.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

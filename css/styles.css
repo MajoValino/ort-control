@@ -1,0 +1,1210 @@
+/* ═══════════════════════════════════════════════════════════════
+   ORT Control — styles.css
+   Tipografía pixelada, estética retro, relación 16:9 fija.
+   Sin frameworks. Sin bordes redondeados. Sin antialiasing decorativo.
+═══════════════════════════════════════════════════════════════ */
+
+/* ─── IMPORT FONT ─── */
+/* VT323 y Share Tech Mono desde Google Fonts — ver index.html para el link */
+
+/* ─── RESET ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── BASE ─── */
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: 'VT323', 'Share Tech Mono', 'Courier New', monospace;
+  color: #fff;
+  /* Desactivar antialiasing tipográfico */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENEDOR PRINCIPAL — 1600×900 px, siempre 16:9
+   Escalado proporcional controlado por JS (transform: scale)
+═══════════════════════════════════════════════════════════════ */
+#game-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1600px;
+  height: 900px;
+
+  /* transform-origin en top-left para que el escalado por JS
+     centre el container correctamente */
+  transform-origin: top left;
+
+  overflow: hidden;
+  background: #111;
+
+  /* Renderizado pixelado para todo el container */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.document-stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 60px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  border: 8px solid;
+  padding: 10px 30px;
+  border-radius: 10px;
+  opacity: 0.8;
+  z-index: 100;
+  pointer-events: none;
+}
+.stamp-approved {
+  color: #2e7d32;
+  border-color: #2e7d32;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(46, 125, 50, 0.4);
+}
+.stamp-denied {
+  color: #c62828;
+  border-color: #c62828;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(198, 40, 40, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMACIONES
+═══════════════════════════════════════════════════════════════ */
+.screen {
+  position: absolute;
+  inset: 0;              /* top:0 right:0 bottom:0 left:0 */
+  z-index: 10;
+  display: none;         /* oculto por defecto */
+}
+
+.screen.active {
+  display: block;
+}
+
+.screen-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* cubre todo el área — la imagen de fondo llena la pantalla */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIPOGRAFÍA Y UTILIDADES
+═══════════════════════════════════════════════════════════════ */
+h1, h2, h3, p, span, button, input, li, div {
+  font-family: 'VT323', 'Share Tech Mono', 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOTONES DE MENÚ — estilo VT323 con flecha pixelada
+═══════════════════════════════════════════════════════════════ */
+.menu-btn {
+  position: absolute;
+  background: transparent;
+  color: #b8b8a0;
+  border: none;
+  font-size: 42px;
+  line-height: 1;
+  cursor: pointer;
+  text-align: left;
+  padding: 6px 10px 6px 30px;
+  text-shadow: 2px 2px 0 #000;
+  transition: color 0.08s;
+  outline: none;
+}
+
+/* Flecha pixelada a la izquierda */
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 10px 0 10px 14px;
+  border-color: transparent transparent transparent transparent;
+  transition: border-left-color 0.08s;
+}
+
+.menu-btn:hover,
+.menu-btn:focus {
+  color: #fff;
+}
+
+.menu-btn:hover::before,
+.menu-btn:focus::before {
+  border-left-color: #fff;
+}
+
+/* Variante inline (dentro de cajas, no absoluta) */
+.menu-btn.btn-inline {
+  position: static;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PANTALLA INICIO — nav superpuesta
+═══════════════════════════════════════════════════════════════ */
+.start-nav {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+/* Los botones dentro de .start-nav se posicionan con flexbox, no abs */
+.start-nav .menu-btn {
+  position: relative;
+  text-align: center;
+  padding: 6px 30px;
+}
+
+/* Flecha pixelada a la izquierda */
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 10px 0 10px 14px;
+  border-color: transparent transparent transparent transparent;
+  transition: border-left-color 0.08s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CRÉDITOS — overlay
+═══════════════════════════════════════════════════════════════ */
+#credits-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex !important;     /* Si no está hidden usa flex */
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+#credits-overlay.hidden {
+  display: none !important;
+}
+
+.credits-box {
+  text-align: center;
+  max-width: 700px;
+}
+
+.credits-box h1 {
+  font-size: 72px;
+  color: #e0d8a0;
+  margin-bottom: 8px;
+  text-shadow: 3px 3px 0 #000;
+}
+
+.credits-box p {
+  font-size: 28px;
+  color: #aaa;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.authors-list {
+  margin: 20px 0;
+  font-size: 32px;
+  color: #ddd;
+  line-height: 1.4;
+}
+
+#credits-ack {
+  font-size: 22px;
+  color: #666;
+  margin-top: 14px;
+  font-style: italic;
+}
+
+.credits-box .btn-inline {
+  margin-top: 30px;
+  font-size: 38px;
+  color: #b8b8a0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOLETÍN DIARIO
+═══════════════════════════════════════════════════════════════ */
+#bulletin-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #1a1a0e;
+  text-shadow: none;
+  pointer-events: none;
+}
+
+#bulletin-day-num {
+  position: absolute;
+  top: 27.3%;
+  right: 10.4%;
+  font-size: 32px;
+  font-weight: bold;
+  width: 4.5%;
+  text-align: center;
+}
+
+#bulletin-date-val {
+  position: absolute;
+  top: 27.3%;
+  left: 49%;
+  font-size: 28px;
+}
+
+#bulletin-rule {
+  position: absolute;
+  top: 36%;
+  left: 4%;
+  width: 29.5%;
+  font-size: 22px;
+  color: #333;
+  line-height: 1.3;
+}
+
+#bulletin-obs {
+  position: absolute;
+  top: 36%;
+  left: 36.5%;
+  width: 25.5%;
+  list-style: square;
+  padding-left: 20px;
+}
+
+#bulletin-reminders {
+  position: absolute;
+  top: 38%;
+  left: 63.7%;
+  width: 29.5%;
+  list-style: square;
+  padding-left: 20px;
+}
+
+#bulletin-obs li,
+#bulletin-reminders li {
+  font-size: 22px;
+  color: #333;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+#bulletin-example {
+  position: absolute;
+  top: 59%;
+  left: 65%;
+  width: 29.5%;
+  height: 25%;
+}
+
+.action-btn {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2a2a0e;
+  color: #e0d8a0;
+  border: 3px solid #1a1a08;
+  font-size: 36px;
+  padding: 8px 28px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+  text-shadow: 1px 1px 0 #000;
+  transition: background 0.1s, transform 0.05s;
+  outline: none;
+}
+
+.action-btn:hover {
+  background: #3a3a1e;
+}
+
+.action-btn:active {
+  transform: translateX(-50%) translateY(3px);
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HUD (game info bar)
+═══════════════════════════════════════════════════════════════ */
+#game-hud {
+  position: absolute;
+  bottom: 60%;
+  right: 1%;
+  text-align: right;
+  z-index: 30;
+  text-shadow: 1px 1px 0 #000;
+  pointer-events: none;
+}
+
+#hud-day {
+  display: block;
+  font-size: 26px;
+  color: #b8b8a0;
+}
+
+#hud-date {
+  display: block;
+  font-size: 22px;
+  color: #888;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERSONAJE
+═══════════════════════════════════════════════════════════════ */
+#character-area {
+  position: absolute;
+  bottom: 26.4%; 
+  left: 6%;
+  width: 17%;
+  height: 50%; /* Viewport fijo */
+  z-index: 15;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.character-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  animation: charEnter 0.4s steps(3) forwards;
+}
+
+@keyframes charEnter {
+  from { transform: translateX(-60px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes charExit {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-60px); opacity: 0; }
+}
+
+.character-img.exiting {
+  animation: charExit 0.3s steps(3) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIÁLOGO / CHAT
+═══════════════════════════════════════════════════════════════ */
+#dialogue-area {
+  position: absolute;
+  left: 1%;
+  top: 2%;
+  width: 28%;
+  height: 35%;
+  background: rgba(8, 8, 6, 0.82);
+  border: 2px solid #444;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+#chat-history {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 20px;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #444 #111;
+}
+
+#chat-history::-webkit-scrollbar { width: 6px; }
+#chat-history::-webkit-scrollbar-track { background: #111; }
+#chat-history::-webkit-scrollbar-thumb { background: #444; }
+
+.chat-msg {
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.msg-player {
+  color: #8cbff7;
+}
+
+.msg-npc {
+  color: #e8e8cc;
+}
+
+.chat-controls {
+  display: flex;
+  gap: 6px;
+}
+
+#chat-input {
+  flex: 1;
+  background: #0a0a08;
+  color: #e8e8cc;
+  border: 1px solid #444;
+  font-size: 20px;
+  padding: 4px 6px;
+  outline: none;
+  font-family: 'VT323', 'Courier New', monospace;
+}
+
+#chat-input:focus {
+  border-color: #888;
+}
+
+#chat-input:disabled {
+  color: #555;
+}
+
+#chat-send {
+  background: #2a2a1e;
+  color: #b8b8a0;
+  border: 1px solid #444;
+  font-size: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: 'VT323', 'Courier New', monospace;
+  white-space: nowrap;
+}
+
+#chat-send:hover { background: #3a3a2e; }
+#chat-send:active { background: #1a1a10; }
+#chat-send:disabled { color: #444; cursor: default; }
+
+/* ═══════════════════════════════════════════════════════════════
+   BANDEJA Y CAPA DE DOCUMENTOS
+═══════════════════════════════════════════════════════════════ */
+#document-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+}
+
+#document-layer > * {
+  pointer-events: auto; /* Para que los documentos puedan ser arrastrados */
+}
+
+#document-tray {
+  position: absolute;
+  left: 28%; /* Desplazado para no tapar personaje ni libreta */
+  bottom: 2%;
+  width: 40%;
+  height: 25%;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+  padding: 8px;
+  border-top: 1px solid rgba(100, 90, 60, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ÁREA DE INSPECCIÓN (derecha)
+═══════════════════════════════════════════════════════════════ */
+#inspection-area {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  z-index: 18; /* debajo del diálogo, encima del fondo */
+  pointer-events: none; /* los doc-wrappers individuales tienen pointer-events */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DOCUMENTOS (tarjetas arrastrables)
+═══════════════════════════════════════════════════════════════ */
+.doc-wrapper {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  touch-action: none;   /* necesario para PointerEvents en touch */
+  /* z-index manejado por JS */
+}
+
+.doc-wrapper:active {
+  cursor: grabbing;
+}
+
+/* Estado: en bandeja (miniatura) */
+.doc-wrapper.in-tray {
+  /* En bandeja usamos transformación reducida.
+     El transform-origin top-left hace que encaje en el espacio del flex */
+  transform: scale(0.28);
+  transform-origin: top left;
+  /* Reserva espacio encogido en el flex layout (ancho aprox. del doc * 0.28) */
+  /* El ancho natural del doc-card se define por la imagen de fondo */
+  flex-shrink: 0;
+}
+
+/* Estado: en área de inspección (tamaño completo, absoluto) */
+.doc-wrapper.in-inspection {
+  position: absolute;
+  transform: scale(1);
+  transform-origin: top left;
+}
+
+.document-card {
+  position: relative;
+  display: inline-block;
+  /* Tamaño natural determinado por la imagen de fondo */
+}
+
+.document-background {
+  display: block;
+  /* Los documentos son imágenes de alta calidad, pixelated sería incorrecto aquí
+     si están diseñadas como arte vectorial o hires — mantener calidad de imagen */
+  image-rendering: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Ancho base del documento en bandeja — se escala con transform */
+  width: 480px;
+  height: auto;
+}
+
+/* Campos de texto superpuestos sobre la imagen del documento */
+.doc-field {
+  position: absolute;
+  color: #111;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-shadow: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.doc-field.field-photo {
+  width: 22%;
+  height: auto;
+}
+
+/* ─── POSICIONES para cada tipo de documento ─────────────────
+   Estos valores son aproximados y deberán ajustarse visualmente
+   una vez se comprueben las imágenes reales de los assets.
+──────────────────────────────────────────────────────────────── */
+
+/* IDENTIDAD */
+.identity-document .field-name         { top: 42%; left: 8%; font-size: 17px; }
+.identity-document .field-surname      { top: 49%; left: 8%; font-size: 17px; }
+.identity-document .field-documentNumber { top: 56%; left: 8%; font-size: 15px; }
+.identity-document .field-birthDate    { top: 63%; left: 8%; font-size: 14px; }
+.identity-document .field-origin       { top: 70%; left: 8%; font-size: 14px; }
+.identity-document .field-securityCode { top: 77%; left: 8%; font-size: 12px; color: #444; }
+.identity-document .field-photo        { top: 10%; right: 8%; width: 28%; }
+
+/* ADMISIÓN */
+.admision-document .field-name         { top: 35%; left: 10%; font-size: 17px; }
+.admision-document .field-surname      { top: 41%; left: 10%; font-size: 17px; }
+.admision-document .field-career       { top: 52%; left: 10%; font-size: 16px; }
+.admision-document .field-admissionDate { top: 63%; left: 10%; font-size: 14px; }
+.admision-document .field-studentCode  { top: 72%; left: 10%; font-size: 13px; }
+
+/* CERTIFICADO */
+.certificado-document .field-name      { top: 35%; left: 10%; }
+.certificado-document .field-surname   { top: 42%; left: 10%; }
+.certificado-document .field-career    { top: 52%; left: 10%; }
+.certificado-document .field-institution { top: 60%; left: 10%; font-size: 14px; }
+.certificado-document .field-completedCourses { top: 68%; left: 10%; font-size: 13px; }
+.certificado-document .field-issueDate { top: 77%; left: 10%; font-size: 13px; }
+
+/* CONSTANCIA */
+.constancia-document .field-name       { top: 37%; left: 10%; }
+.constancia-document .field-surname    { top: 44%; left: 10%; }
+.constancia-document .field-career     { top: 54%; left: 10%; }
+.constancia-document .field-semester   { top: 63%; left: 10%; font-size: 14px; }
+.constancia-document .field-registrationDate { top: 72%; left: 10%; font-size: 13px; }
+.constancia-document .field-studentCode { top: 80%; left: 10%; font-size: 12px; }
+
+/* PASE VISITANTE */
+.pase-visitante-document .field-visitorName  { top: 38%; left: 10%; }
+.pase-visitante-document .field-visitDate    { top: 50%; left: 10%; }
+.pase-visitante-document .field-visitReason  { top: 60%; left: 10%; font-size: 14px; }
+.pase-visitante-document .field-hostName     { top: 70%; left: 10%; font-size: 14px; }
+.pase-visitante-document .field-entryTime    { top: 80%; left: 10%; }
+
+/* ORDEN DE SERVICIO */
+.orden-servicio-document .field-requestorName  { top: 33%; left: 10%; }
+.orden-servicio-document .field-department     { top: 42%; left: 10%; }
+.orden-servicio-document .field-serviceDescription { top: 52%; left: 10%; font-size: 14px; }
+.orden-servicio-document .field-amount         { top: 68%; left: 10%; font-size: 16px; }
+.orden-servicio-document .field-requestDate    { top: 78%; left: 10%; font-size: 14px; }
+
+/* PERMISO ESPECIAL */
+.permiso-especial-document .field-holderName   { top: 36%; left: 10%; }
+.permiso-especial-document .field-company      { top: 45%; left: 10%; }
+.permiso-especial-document .field-entryReason  { top: 55%; left: 10%; font-size: 14px; }
+.permiso-especial-document .field-validFrom    { top: 66%; left: 10%; }
+.permiso-especial-document .field-validUntil   { top: 66%; left: 55%; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SELLOS DE DECISIÓN
+═══════════════════════════════════════════════════════════════ */
+#decision-controls {
+  position: absolute;
+  bottom: 2%;
+  right: 1%;
+  display: flex;
+  gap: 14px;
+  z-index: 35;
+}
+
+.stamp-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.08s;
+  outline: none;
+}
+
+.stamp-btn:hover {
+  filter: brightness(1.15);
+}
+
+.stamp-btn:active {
+  transform: translateY(4px);
+}
+
+.stamp-btn img {
+  height: 100px;
+  width: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+/* Fecha superpuesta sobre el sello */
+.stamp-date {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  color: rgba(40, 10, 10, 0.8);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOTIFICACIÓN DE TURNO
+═══════════════════════════════════════════════════════════════ */
+#turn-notification {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.88);
+  color: #e8e8cc;
+  font-size: 52px;
+  padding: 20px 40px;
+  border: 3px solid #666;
+  z-index: 60;
+  pointer-events: none;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+#turn-notification.approved-notif {
+  border-color: #234;
+  color: #8af;
+}
+
+#turn-notification.denied-notif {
+  border-color: #422;
+  color: #f88;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PANTALLA DE PAUSA (overlay sobre el gameplay)
+═══════════════════════════════════════════════════════════════ */
+.pause-overlay {
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 90;
+}
+
+/* Menú de pausa — centrado sobre la imagen de pausa */
+.pause-menu {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+
+.pause-menu .menu-btn.btn-inline {
+  font-size: 44px;
+  position: relative;
+  text-align: center;
+}
+
+/* La pausa comparte la clase .screen — override de display */
+#screen-pause.active {
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CORRECCIONES DE MAQUETACIÓN Y LÓGICA VISUAL — 2026-07-19
+═══════════════════════════════════════════════════════════════ */
+
+/* Inicio: usar exactamente las dos líneas punteadas del fondo */
+.start-nav {
+  top: 78%;
+  left: 50%;
+  width: 360px;
+  transform: translateX(-50%);
+  gap: 20px;
+}
+.start-nav .menu-btn {
+  width: 100%;
+  font-size: 34px;
+  line-height: 1;
+  text-align: center;
+  padding: 0;
+}
+.start-nav .menu-btn::before { left: 72px; }
+
+/* Boletín: solo contenido dinámico dentro de las cajas vacías */
+
+#bulletin-rule {
+  top: 40%; 
+  left: 9%; 
+  width: 26.5%; 
+  height: 41%;
+  line-height: 1.28; 
+  overflow: hidden;
+}
+#bulletin-obs {
+  top: 40%; 
+  left: 38.1%; 
+  width: 24.4%;
+  height: 41%;
+  line-height: 1.28; 
+  overflow: hidden; 
+  padding-left: 20px;
+}
+
+#bulletin-obs li, #bulletin-reminders li {
+ line-height: 1.25; margin-bottom: 10px;
+}
+#bulletin-example {
+  top: 57.2%; left: 66.7%; width: 25.4%; height: 22.2%; overflow: hidden;
+}
+#screen-bulletin #btn-start-day {
+  top: 84%; bottom: auto; left: 50%;
+  padding: 5px 18px;
+}
+
+/* Personaje: ventana fija detrás del mostrador */
+#character-area {
+  left: 4.5%; bottom: 33.7%; width: 22%; height: 30.5%;
+  align-items: flex-end; overflow: hidden;
+}
+.character-img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+
+/* Chat más compacto y sin invadir la ventanilla */
+#dialogue-area { left: 1.2%; top: 1.8%; width: 27.2%; height: 28%; padding: 9px; }
+
+/* Los documentos viven todos en una única capa absoluta */
+#document-tray { display: none; }
+#document-layer { z-index: 28; }
+.doc-wrapper {
+  position: absolute;
+  width: 480px;
+  height: auto;
+  transform-origin: top left;
+}
+.doc-wrapper.in-tray { transform: scale(.28); }
+.doc-wrapper.in-inspection { transform: scale(.82); }
+.doc-wrapper.selected-document { outline: 4px dashed #d8d29b; outline-offset: 5px; }
+.doc-wrapper.dragging { cursor: grabbing; }
+.document-background { width: 480px; image-rendering: pixelated; }
+
+/* Campos: identidad horizontal */
+.doc-field { font-family: 'VT323', 'Share Tech Mono', monospace; color: #282421; }
+.identity-document .field-photo { top: 27%; left: 5.8%; width: 26%; height: 50%; object-fit: cover; object-position: top; }
+.identity-document .field-name { top: 26%; left: 48%; font-size: 18px; }
+.identity-document .field-surname { top: 37%; left: 48%; font-size: 18px; }
+.identity-document .field-documentNumber { top: 48%; left: 68%; font-size: 17px; }
+.identity-document .field-origin { top: 59%; left: 72%; font-size: 16px; }
+.identity-document .field-securityCode { top: 73%; left: 73%; font-size: 15px; }
+
+/* Carta de admisión vertical */
+.admission-document .field-applicantName { top: 32%; left: 10%; font-size: 17px; }
+.admission-document .field-career { top: 42%; left: 10%; font-size: 17px; }
+.admission-document .field-faculty { top: 51%; left: 10%; font-size: 16px; }
+.admission-document .field-fileNumber { top: 65%; left: 10%; font-size: 15px; }
+.admission-document .field-issueDate { top: 65%; left: 56%; font-size: 15px; }
+.admission-document .field-signature { top: 87%; left: 15%; font-size: 13px; }
+
+/* Certificado de estudios */
+.study-certificate-document .field-applicantName { top: 35%; left: 44%; font-size: 17px; }
+.study-certificate-document .field-originInstitution { top: 41%; left: 44%; font-size: 15px; }
+.study-certificate-document .field-academicStatus { top: 62.4%; left: 65%; font-size: 15px; }
+.study-certificate-document .field-issueDate { top: 68%; left: 65%; font-size: 15px; }
+.study-certificate-document .field-signature { top: 87%; left: 14%; font-size: 13px; }
+
+/* Pase visitante */
+.visitor-pass-document .field-name { top: 32%; left: 10%; font-size: 17px; }
+.visitor-pass-document .field-visitReason { top: 44%; left: 10%; font-size: 16px; }
+.visitor-pass-document .field-authorizedArea { top: 55%; left: 10%; font-size: 16px; }
+.visitor-pass-document .field-date { top: 66%; left: 10%; font-size: 16px; }
+.visitor-pass-document .field-time { top: 66%; left: 56%; font-size: 16px; }
+.visitor-pass-document .field-signature { top: 79%; left: 24%; font-size: 14px; }
+
+/* Orden de servicio */
+.service-order-document .field-name { top: 32%; left: 10%; font-size: 17px; }
+.service-order-document .field-companyService { top: 44%; left: 10%; font-size: 16px; }
+.service-order-document .field-reason { top: 55%; left: 10%; font-size: 15px; }
+.service-order-document .field-authorizedArea { top: 65%; left: 10%; font-size: 15px; }
+.service-order-document .field-date { top: 74%; left: 10%; font-size: 15px; }
+.service-order-document .field-signature { top: 74%; left: 55%; font-size: 14px; }
+.service-order-document .field-approval { top: 85%; left: 36%; font-size: 16px; }
+
+/* Sellos institucionales dentro de la zona prevista de cada plantilla */
+.institutional-stamp {
+  position: absolute; object-fit: contain; image-rendering: pixelated;
+  opacity: .62; pointer-events: none;
+}
+.admission-document .institutional-stamp { left: 58%; top: 76%; width: 27%; height: 16%; }
+.study-certificate-document .institutional-stamp { left: 58%; top: 80%; width: 29%; height: 16%; }
+.visitor-pass-document .institutional-stamp { left: 34%; top: 77%; width: 32%; height: 15%; }
+.service-order-document .institutional-stamp { left: 36%; top: 79%; width: 30%; height: 15%; }
+
+/* Sello de decisión: usa el asset real, no texto CSS inventado */
+.document-stamp { display: none !important; }
+.decision-stamp-overlay {
+  position: absolute; left: 15%; top: 40%; width: 72%; height: auto;
+  transform: rotate(-10deg); z-index: 120; pointer-events: none;
+}
+.decision-stamp-overlay img { width: 100%; display: block; image-rendering: pixelated; }
+.decision-stamp-overlay span {
+  position: absolute; left: 9%; top: 13%; font-size: 13px; color: currentColor;
+}
+.decision-approved { color: #3c632c; }
+.decision-denied { color: #8b1f21; }
+
+/* Controles de decisión más pequeños y sin tapar documentos grandes */
+#decision-controls { bottom: 1.6%; right: 1.2%; gap: 10px; }
+.stamp-btn img { height: 92px; }
+
+/* Pausa: botones en las cuatro líneas inferiores */
+.pause-menu { top: 71%; gap: 27px; width: 410px; }
+.pause-menu .menu-btn.btn-inline { font-size: 34px; width: 100%; text-align: center; padding: 0; }
+.pause-menu .menu-btn::before { left: 52px; }
+
+/* Fin de jornada legible */
+#screen-end-day #end-day-summary {
+  top: 24% !important; left: 27% !important; width: 46% !important;
+  background: rgba(239, 235, 209, .96); border: 4px double #332f28;
+  padding: 28px 42px; font-size: 25px !important;
+}
+#screen-end-day #btn-next-day { position: static; transform: none; }
+
+#turn-notification.warning-notif { font-size: 30px; color: #e8d58f; border-color: #8d7f43; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   EXTENSIONES FUNCIONALES — NO MODIFICAN LAS REGLAS PREVIAS
+═══════════════════════════════════════════════════════════════ */
+
+/* Los documentos se depositan sobre la mesa derecha. */
+.doc-wrapper.in-tray { transform: scale(.28); transform-origin: top left; }
+#document-layer { pointer-events: none; }
+#document-layer .doc-wrapper { pointer-events: auto; touch-action: none; user-select: none; -webkit-user-drag: none; }
+
+/* Selección de datos para interrogar inconsistencias. */
+.doc-field { cursor: crosshair; pointer-events: auto; }
+.doc-field.selected-error-field,
+.stamp-error-marker.selected-error-field {
+  outline: 5px dashed #d63838;
+  outline-offset: 3px;
+  background: rgba(214,56,56,.16);
+}
+.stamp-error-marker {
+  position: absolute;
+  right: 8%;
+  bottom: 7%;
+  width: 31%;
+  height: 16%;
+  border: 3px dashed rgba(120,30,30,.65);
+  background: rgba(255,255,255,.08);
+  color: rgba(80,30,30,.75);
+  font: 15px 'VT323', monospace;
+  cursor: crosshair;
+}
+
+/* Instrucciones claras al comenzar cada jornada. */
+#day-instructions,
+#citation-notice {
+  position: absolute;
+  inset: 0;
+  z-index: 180;
+  background: rgba(0,0,0,.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+.instructions-panel,
+.citation-paper {
+  width: 650px;
+  background: #e5e1c2;
+  color: #211d18;
+  border: 7px double #302b25;
+  padding: 34px 42px;
+  font-size: 27px;
+  line-height: 1.25;
+}
+.instructions-panel h2,
+.citation-paper h2 { font-size: 38px; border-bottom: 3px solid #302b25; margin-bottom: 20px; }
+.instructions-panel ol { padding-left: 34px; }
+.instructions-panel li { margin: 10px 0; }
+.instructions-panel .action-btn,
+.citation-paper .action-btn { position: static; transform: none; margin-top: 24px; font-size: 28px; padding: 8px 18px; }
+.citation-paper { background: #eadfbd; width: 560px; }
+.citation-paper p { font-size: 28px; line-height: 1.35; }
+
+/* Fin de jornada autónomo: nunca muestra el boletín por detrás. */
+#screen-end-day { background: #090909; }
+#screen-end-day #end-day-summary {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 620px !important;
+  transform: translate(-50%,-50%);
+  background: #e5e1c2;
+  color: #211d18;
+  border: 7px double #302b25;
+  padding: 38px 48px;
+  font-size: 28px !important;
+}
+#screen-end-day #end-day-summary h2 { font-size: 42px; margin-bottom: 22px; border-bottom: 3px solid #302b25; }
+#screen-end-day #summary-list { list-style: none; line-height: 1.5; }
+#screen-end-day #summary-score { font-size: 32px; font-weight: bold; margin-top: 22px; }
+#screen-end-day #btn-next-day { position: static; transform: none; margin-top: 25px; font-size: 29px; padding: 8px 18px; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   REVISIÓN 3 — EXTENSIONES SOLAMENTE (no modifica CSS previo)
+═══════════════════════════════════════════════════════════════ */
+/* Bandeja real sobre la mesa izquierda. */
+.doc-wrapper.in-tray { transform: scale(.24); transform-origin: top left; }
+
+/* Constancia de inscripción: campos y sello calibrados. */
+.enrollment-document .field-name { top: 34%; left: 30%; font-size: 16px; }
+.enrollment-document .field-studentNumber { top: 42%; left: 44%; font-size: 15px; }
+.enrollment-document .field-career { top: 49.5%; left: 30%; font-size: 15px; }
+.enrollment-document .field-semester { top: 55%; left: 54%; font-size: 14px; }
+.enrollment-document .field-category { top: 60%; left: 54%; font-size: 14px; }
+.enrollment-document .field-issueDate { top: 66%; left: 54%; font-size: 14px; }
+.enrollment-document .field-code { top: 72%; left: 70%; font-size: 14px; }
+.enrollment-document .institutional-stamp { left: 67%; top: 82%; width: 20%; height: 13%; opacity: .72; }
+
+/* Códigos cruzados adicionales. */
+.study-certificate-document .field-certificateCode { top: 74%; left: 65%; font-size: 14px; }
+.visitor-pass-document .field-passCode { top: 72%; left: 58%; font-size: 14px; }
+.service-order-document .field-orderCode { top: 90%; left: 10%; font-size: 14px; }
+.special-permit-document .field-authorizationCode { right: 8%; bottom: 8%; font-size: 14px; }
+
+/* Checklist visible: no revela el error exacto, solo muestra lo requerido y entregado. */
+#document-requirements {
+  position:absolute; z-index:45; right:1.8%; bottom:15%; width:235px;
+  padding:10px 12px; border:2px solid rgba(205,197,154,.62);
+  background:rgba(18,15,14,.88); color:#d8d29b;
+  font:19px 'VT323','Share Tech Mono',monospace; pointer-events:none;
+}
+#document-requirements h3 { font-size:22px; margin:0 0 6px; border-bottom:1px dotted #8d8768; }
+.requirement-row { display:flex; gap:8px; line-height:1.15; margin:3px 0; }
+.requirement-row.present { color:#aeb88a; }
+.requirement-row.missing { color:#d27772; }
+.requirement-row span { width:14px; font-weight:bold; }
+
+/* Preguntas predefinidas, además del campo libre. */
+#quick-questions { display:flex; gap:5px; flex-wrap:wrap; margin-top:5px; max-height:54px; overflow:hidden; }
+.quick-question {
+  border:1px solid #5e5b45; background:#191b17; color:#cfc99e;
+  font:15px 'VT323','Share Tech Mono',monospace; padding:2px 6px; cursor:pointer;
+}
+.quick-question:hover { background:#303426; color:#fff6c9; }
+
+/* ═══════════════════════════════════════════════════════════════
+   REVISIÓN 4 — SOLO EXTENSIONES. No reemplaza el CSS del usuario.
+═══════════════════════════════════════════════════════════════ */
+
+/* Documentos iniciales más pequeños y contenidos en la mesa marrón izquierda. */
+.doc-wrapper.in-tray {
+  transform: scale(.18);
+  transform-origin: top left;
+}
+.doc-wrapper.in-inspection {
+  transform: scale(.78);
+  transform-origin: top left;
+}
+
+/* Lore y documentos nuevos dentro del ejemplo visual del boletín. */
+#bulletin-example {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 16px;
+  overflow: hidden;
+}
+#bulletin-lore {
+  margin: 0;
+  font: 19px/1.2 'VT323','Share Tech Mono',monospace;
+  color: #3f3a32;
+}
+#bulletin-new-docs {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 2px dotted #777163;
+  font: 17px/1.15 'VT323','Share Tech Mono',monospace;
+  color: #3f3a32;
+}
+
+/* Evidencias seleccionadas. */
+#evidence-panel {
+  position: absolute;
+  right: 1.8%;
+  bottom: 28%;
+  z-index: 48;
+  width: 235px;
+  padding: 9px 11px;
+  border: 2px solid rgba(205,197,154,.62);
+  background: rgba(18,15,14,.9);
+  color: #d8d29b;
+  font: 17px/1.15 'VT323','Share Tech Mono',monospace;
+}
+#evidence-panel h3 { margin: 0 0 6px; font-size: 21px; border-bottom: 1px dotted #8d8768; }
+#evidence-list > div { margin: 5px 0; padding-bottom: 4px; border-bottom: 1px dotted rgba(141,135,104,.5); }
+#btn-compare-evidence {
+  width: 100%; margin-top: 6px; border: 1px solid #817a55; background: #29281d; color: #e4dda2;
+  font: 18px 'VT323','Share Tech Mono',monospace; cursor: pointer;
+}
+.selected-rule-evidence { outline: 4px dashed #c5af55 !important; background: rgba(197,175,85,.18) !important; }
+
+/* Cuaderno rojo: botón invisible sobre el cuaderno del escritorio. */
+#rulebook-toggle {
+  position: absolute;
+  left: 19.2%;
+  bottom: 1.6%;
+  width: 5.6%;
+  height: 12.5%;
+  z-index: 55;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+#rulebook-toggle:hover { outline: 3px dashed rgba(240,225,150,.7); }
+#rulebook-overlay {
+  position: absolute; inset: 0; z-index: 190; background: rgba(0,0,0,.72);
+  display: flex; align-items: center; justify-content: center;
+}
+.rulebook-paper {
+  width: 760px; max-height: 690px; overflow: auto; padding: 28px 34px;
+  background: #e4e1bd; color: #28251f; border: 8px double #39352d;
+  font: 24px/1.2 'VT323','Share Tech Mono',monospace;
+}
+.rulebook-paper header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #39352d; }
+.rulebook-paper h2 { margin: 0 0 8px; font-size: 38px; }
+#btn-close-rulebook { border: 2px solid #39352d; background: transparent; font: 27px 'VT323',monospace; cursor: pointer; }
+#rulebook-day-title { font-weight: bold; }
+#rulebook-rules { display: grid; gap: 9px; }
+.rule-evidence {
+  text-align: left; padding: 8px 10px; border: 2px dotted #777163; background: rgba(255,255,255,.18);
+  color: #28251f; font: 22px/1.15 'VT323','Share Tech Mono',monospace; cursor: crosshair;
+}
+.rulebook-help { margin-top: 18px; border-top: 2px solid #777163; padding-top: 10px; font-size: 19px; }
+
+/* Bandeja desplegable de sellos. */
+#decision-drawer-toggle {
+  position: absolute; right: 2.2%; bottom: 1.2%; z-index: 71;
+  border: 2px solid #8c8358; background: #201f18; color: #ddd49a;
+  font: 20px 'VT323','Share Tech Mono',monospace; padding: 3px 11px; cursor: pointer;
+}
+#decision-controls {
+  transition: transform .18s steps(4,end), opacity .18s steps(4,end);
+  transform-origin: bottom right;
+}
+#decision-controls.decision-collapsed {
+  transform: translateY(115px);
+  opacity: .15;
+  pointer-events: none;
+}
+
+/* El personaje no se renderiza detrás del popup inicial; se carga al pulsar ENTENDIDO. */
+#day-instructions:not(.hidden) ~ #decision-controls,
+#day-instructions:not(.hidden) ~ #decision-drawer-toggle { filter: brightness(.35); }
+#instructions-context {
+  margin: 0 0 15px; padding: 9px 11px; border: 2px dotted #746f5e; background: rgba(255,255,255,.16);
+  font-size: 22px; line-height: 1.2;
+}
+
+/* Estado IA en pausa, ubicado como opción secundaria sin desplazar las cuatro líneas principales. */
+.pause-menu .ai-config-btn {
+  position: absolute;
+  top: 230px;
+  right: -280px;
+  width: 230px !important;
+  font-size: 23px !important;
+  color: #b9b28c;
+}
+
+/* Resumen narrativo y finales provisionales. */
+#receptionist-lore { margin-top: 18px; padding-top: 12px; border-top: 2px dotted #6f6a58; }
+#receptionist-lore h3 { margin: 0 0 5px; font-size: 27px; }
+#receptionist-lore p { margin: 0; font-size: 22px; line-height: 1.2; }
+#ending-preview { margin-top: 14px; padding: 10px; border: 2px solid #39352d; font-size: 23px; font-weight: bold; }
+
+.msg-system { color: #e1c65a; }
+.requirement-row {
+  width: 100%; border: 0; background: transparent; text-align: left; padding: 0;
+  font: inherit; cursor: default;
+}
+.requirement-row.missing { cursor: crosshair; }
+.requirement-row.selected-error-field { outline: 3px dashed #d63838; outline-offset: 2px; }
