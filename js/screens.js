@@ -5,6 +5,7 @@ const SCREENS = {
   bulletin: document.getElementById('screen-bulletin'),
   game: document.getElementById('screen-game'),
   endDay: document.getElementById('screen-end-day'),
+  ending: document.getElementById('screen-ending'),
   pause: document.getElementById('screen-pause')
 };
 const creditsOverlay = document.getElementById('credits-overlay');

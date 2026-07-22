@@ -16,6 +16,7 @@
 
   <!-- Contenedor del juego — siempre 1600×900 px, escalado por JS -->
   <div id="game-container">
+    <button id="audio-toggle" type="button" aria-pressed="true">SONIDO: SÍ</button>
 
     <!-- ═══════════════════════════════════════
          PANTALLA: INICIO
@@ -157,16 +158,25 @@
             <div class="rulebook-page rulebook-right-page">
               <h3>VALIDACIONES Y SELLOS</h3>
               <div id="rulebook-rules-right"></div>
-              
               <div class="rulebook-explanation">
-                <p>Los prefijos cambian según el documento. Compare únicamente los cuatro números finales.</p>
-                <div class="rulebook-examples">
-                <div><em>ID:</em> 4.692.104-3 ➔ Exp: 1190</div>
-                <div><em>Admisión:</em> ADM-2026-1190</div>
-                <div><em>RESULTADO: COINCIDEN. TODOS IDENTIFICAN EL EXPEDIENTE 1190.</em></div>
-              </div>
-              </div>
-              <p class="rulebook-help">Seleccione una regla y un dato, o dos datos, y pulse COMPARAR.</p>
+                <h4>EJEMPLO VISUAL DE CÓDIGOS</h4>
+                <p>Ignore el prefijo. Compare solamente los cuatro dígitos destacados.</p>
+                <div class="rulebook-examples code-comparison-example">
+                  <div><em>IDENTIDAD</em><code>ORT-<strong>1190</strong></code></div>
+                  <div><em>ADMISIÓN</em><code>ADM-2026-<strong>1190</strong></code></div>
+                  <div><em>CONSTANCIA</em><code>INS-26-<strong>1190</strong></code></div>
+                  <div class="code-match-result">✓ COINCIDEN: 1190 = 1190 = 1190</div>
+                </div>
+                <div class="valid-stamps-reference">
+                  <h4>SELLOS VÁLIDOS</h4>
+                  <div class="valid-stamps-grid">
+                    <figure><img src="assets/sellos/admisiones.png" alt="Sello válido de Admisiones"><figcaption>ADMISIONES</figcaption></figure>
+                    <figure><img src="assets/sellos/facultad.png" alt="Sello válido de Facultad"><figcaption>FACULTAD</figcaption></figure>
+                    <figure><img src="assets/sellos/administracion.png" alt="Sello válido de Administración"><figcaption>ADMINISTRACIÓN</figcaption></figure>
+                    <figure><img src="assets/sellos/institucional.png" alt="Sello institucional válido"><figcaption>INSTITUCIONAL</figcaption></figure>
+                  </div>
+                </div>
+              </div>              <p class="rulebook-help">Seleccione una regla y un dato, o dos datos, y pulse COMPARAR.</p>
               <span class="rulebook-page-number">2</span>
             </div>
             
@@ -187,7 +197,7 @@
         <div class="instructions-panel">
           <h2>INSTRUCCIONES DEL DÍA</h2>
           <p id="instructions-context"></p>
-          <ol id="instructions-list"></ol>
+          <ul id="instructions-list"></ul>
           <button id="btn-close-instructions" class="action-btn">ENTENDIDO ▶</button>
         </div>
       </div>
@@ -235,7 +245,21 @@
     <!-- ═══════════════════════════════════════
          PANTALLA: PAUSA (overlay)
     ═══════════════════════════════════════ -->
-    <div id="screen-pause" class="screen hidden pause-overlay" role="dialog" aria-modal="true" aria-label="Menú de pausa">
+
+    <div id="screen-ending" class="screen hidden" aria-label="Resultado final">
+      <div class="ending-backdrop"></div>
+      <article class="ending-dossier">
+        <header class="ending-header"><span>RECTORADO — EXPEDIENTE CONFIDENCIAL</span><strong id="ending-file-number">ORT/ADM/2026</strong></header>
+        <div class="ending-stamp" id="ending-stamp">RESOLUCIÓN</div>
+        <p class="ending-kicker">RESULTADO DE LA AUDITORÍA</p>
+        <h1 id="ending-title">INSPECTOR MODELO</h1>
+        <p id="ending-story"></p>
+        <section class="ending-stats" id="ending-stats"></section>
+        <section class="ending-decisions"><h2>DECISIONES QUE MARCARON SU EXPEDIENTE</h2><div id="ending-highlights"></div></section>
+        <p id="ending-unlocked">FINAL DESCUBIERTO: 1 DE 3</p>
+        <div class="ending-actions"><button class="action-btn" id="btn-ending-replay">VOLVER A JUGAR</button><button class="action-btn" id="btn-ending-menu">MENÚ PRINCIPAL</button></div>
+      </article>
+    </div>    <div id="screen-pause" class="screen hidden pause-overlay" role="dialog" aria-modal="true" aria-label="Menú de pausa">
       <img src="assets/pantallas/pausa.png" class="screen-bg" alt="Pantalla de pausa" draggable="false">
 
       <div class="pause-menu">
@@ -254,6 +278,7 @@
   <script src="js/screens.js"></script>
   <script src="js/documents.js"></script>
   <script src="js/ai.js"></script>
+  <script src="js/audio.js"></script>
   <script src="js/game.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -314,7 +314,7 @@ h1, h2, h3, p, span, button, input, li, div {
 
 #bulletin-obs li,
 #bulletin-reminders li {
-  font-size: 22px;
+  font-size: 20px;
   color: #333;
   line-height: 1.3;
   margin-bottom: 8px;
@@ -1042,7 +1042,7 @@ h1, h2, h3, p, span, button, input, li, div {
 .enrollment-document .field-semester { top: 55%; left: 54%; font-size: 14px; }
 .enrollment-document .field-category { top: 60%; left: 54%; font-size: 14px; }
 .enrollment-document .field-issueDate { top: 66%; left: 54%; font-size: 14px; }
-.enrollment-document .field-code { top: 72%; left: 70%; font-size: 14px; }
+.enrollment-document .field-code { top: 72%; left: 68%; font-size: 14px; }
 .enrollment-document .institutional-stamp { left: 67%; top: 82%; width: 20%; height: 13%; opacity: .72; }
 
 /* Códigos cruzados adicionales. */
@@ -1053,7 +1053,7 @@ h1, h2, h3, p, span, button, input, li, div {
 
 /* Checklist visible: no revela el error exacto, solo muestra lo requerido y entregado. */
 #document-requirements {
-  position:absolute; z-index:45; right:1.8%; bottom:15%; width:235px;
+  position:absolute; z-index:45; right:1.8%; bottom:20%; width:235px;
   padding:10px 12px; border:2px solid rgba(205,197,154,.62);
   background:rgba(18,15,14,.88); color:#d8d29b;
   font:19px 'VT323','Share Tech Mono',monospace; pointer-events:none;
@@ -1111,7 +1111,7 @@ h1, h2, h3, p, span, button, input, li, div {
 #evidence-panel {
   position: absolute;
   right: 1.8%;
-  bottom: 28%;
+  bottom: 35%;
   z-index: 48;
   width: 235px;
   padding: 9px 11px;
@@ -1723,10 +1723,10 @@ h1, h2, h3, p, span, button, input, li, div {
 
 .identity-document .field-securityCode { top: 72% !important; left: 66% !important; font-size: 17px !important; }
 .admission-document .field-fileNumber { top: 64% !important; left: 9% !important; font-size: 17px !important; }
-.study-certificate-document .field-certificateCode { top: 74% !important; left: 51% !important; font-size: 17px !important; }
+.study-certificate-document .field-certificateCode { top: 68% !important; left: 38% !important; font-size: 17px !important; }
 .enrollment-document .field-studentNumber { top: 41% !important; left: 43% !important; font-size: 17px !important; }
-.enrollment-document .field-code { top: 72% !important; left: 59% !important; font-size: 17px !important; }
-.visitor-pass-document .field-passCode { top: 87% !important; left: 8% !important; font-size: 17px !important; }
+.enrollment-document .field-code { top: 71% !important; left: 68% !important; font-size: 17px !important; }
+.visitor-pass-document .field-passCode {  left: 74% !important; font-size: 17px !important; }
 .service-order-document .field-orderCode { top: 88% !important; left: 8% !important; font-size: 17px !important; }
 .special-permit-document .field-authorizationCode { right: 8% !important; bottom: 7% !important; font-size: 17px !important; }
 
@@ -1782,3 +1782,94 @@ h1, h2, h3, p, span, button, input, li, div {
   display: block !important;
   line-height: 1.22 !important;
 }
+/* REVISION 11 — CINCO DIAS, FINAL, REGLAMENTO Y AUDIO */
+#audio-toggle {
+  position: absolute; z-index: 260; right: 14px; top: 12px;
+  border: 2px solid #a69d6e; background: rgba(20,18,15,.9); color: #ded79f;
+  font: 18px 'VT323', monospace; padding: 4px 9px; cursor: pointer;
+}
+
+.instructions-panel { width: 980px !important; }
+#instructions-list {
+  list-style: none !important; counter-reset: none !important; padding: 0 !important;
+  display: grid !important; grid-template-columns: 1fr 1fr !important;
+  gap: 11px 34px !important; max-height: 340px !important; overflow-y: auto !important;
+}
+#instructions-list li { margin: 0 !important; padding-left: 18px; position: relative; }
+#instructions-list li::before { content: '•'; position: absolute; left: 0; color: #675e3c; }
+
+#evidence-panel { overflow: hidden !important; }
+#evidence-list { overflow-wrap: anywhere !important; word-break: break-word !important; max-height: 116px !important; overflow-y: auto !important; }
+#evidence-list > div { max-width: 100%; overflow: hidden; padding-bottom: 5px; }
+
+#decision-controls:not(.decision-collapsed) {
+  background: #29251f !important; border: 4px double #a69d6e !important;
+  padding: 13px 14px 12px !important; box-shadow: 0 7px 0 rgba(0,0,0,.5) !important;
+}
+#decision-controls:not(.decision-collapsed)::before {
+  content: 'SELLOS DE RESOLUCIÓN'; position: absolute; top: -26px; left: 0;
+  color: #d8d29b; background: #29251f; border: 2px solid #a69d6e;
+  padding: 2px 8px; font: 17px 'VT323', monospace;
+}
+
+.rulebook-right-page { overflow-y: auto !important; }
+.rulebook-explanation { margin-top: 10px !important; padding: 9px !important; }
+.rulebook-explanation h4 { margin: 0 0 5px; font: 19px 'VT323', monospace; }
+.code-comparison-example { display: grid; gap: 3px; background: #28241f !important; padding: 7px !important; }
+.code-comparison-example > div { display: flex; justify-content: space-between; align-items: center; }
+.code-comparison-example code { color: #ddd3a4; font: 17px 'VT323', monospace; }
+.code-comparison-example code strong { color: #86e286; border: 1px solid #86e286; padding: 0 2px; }
+.code-match-result { color: #86e286 !important; justify-content: center !important; border-top: 1px dotted #8b8468; padding-top: 4px; }
+.valid-stamps-reference { margin-top: 8px; border-top: 2px solid #776d50; padding-top: 6px; }
+.valid-stamps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+.valid-stamps-grid figure { margin: 0; text-align: center; }
+.valid-stamps-grid img { width: 58px; height: 45px; object-fit: contain; image-rendering: pixelated; }
+.valid-stamps-grid figcaption { font: 12px 'VT323', monospace; }
+
+.special-permit-document .field-name { top: 34%; left: 37%; font-size: 17px; }
+.special-permit-document .field-exceptionType { top: 38%; left: 37%; font-size: 16px; }
+.special-permit-document .field-date { top: 47.6%; left: 50%; font-size: 16px; }
+.special-permit-document .field-authorizingAuthority { top: 52%; left: 45%; font-size: 16px; }
+.special-permit-document .field-observations { top: 72%; left: 10%; font-size: 15px; }
+.special-permit-document .field-signature { top: 84%; left: 13%; font-size: 14px; }
+.special-permit-document .institutional-stamp { left: 58%; top: 78%; width: 27%; height: 16%; }
+
+#bulletin-reminders {  overflow: hidden !important; font-size: 17px !important; line-height: 1.12 !important; }
+#bulletin-reminders li { margin-bottom: 6px !important; }
+#bulletin-example { top: 56% !important; height: 39% !important;left: 64% !important; }
+
+#screen-ending { background: #0b0b0b; overflow: hidden; }
+.ending-backdrop { position:absolute; inset:0; background: radial-gradient(circle at center,#322d27 0,#111 70%); }
+.ending-dossier {
+  position:absolute; left:50%; top:50%; width:980px; min-height:700px; transform:translate(-50%,-50%) rotate(-.3deg);
+  background:#e4dfbd; color:#211d18; border:9px double #29241f; padding:42px 56px 38px;
+  box-shadow:20px 24px 0 rgba(0,0,0,.48); font:25px 'VT323',monospace;
+}
+.ending-header { display:flex; justify-content:space-between; border-bottom:4px solid #29241f; padding-bottom:10px; }
+.ending-kicker { margin:28px 0 4px; letter-spacing:3px; }
+#ending-title { margin:0 0 16px; font-size:58px; line-height:.95; }
+#ending-story { max-width:760px; font-size:25px; line-height:1.25; }
+.ending-stamp { position:absolute; right:45px; top:105px; border:6px double #477044; color:#477044; padding:9px 14px; transform:rotate(-7deg); font-size:27px; }
+.ending-investigation { color:#8d2929; border-color:#8d2929; }
+.ending-human { color:#755d28; border-color:#755d28; }
+.ending-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin:24px 0; }
+.ending-stats div { border:2px solid #4a4439; padding:10px; text-align:center; }
+.ending-stats strong { display:block; font-size:35px; }
+.ending-stats span { font-size:16px; }
+.ending-decisions { border-top:3px solid #4a4439; padding-top:12px; }
+.ending-decisions h2 { margin:0 0 8px; font-size:24px; }
+.ending-decisions p { margin:5px 0; font-size:19px; }
+#ending-unlocked { position:absolute; right:55px; bottom:40px; font-size:17px; }
+.ending-actions { display:flex; gap:12px; margin-top:18px; }
+.ending-actions .action-btn { position:static !important; transform:none !important; font-size:22px !important; }
+/* REVISION 11B � ALINEACION FINAL DEL COMUNICADO */
+#bulletin-example { top: 56% !important; height: 25% !important; padding: 18px 26px !important; }
+#bulletin-example > h3 { margin-top: 0 !important; }
+
+/* REVISION 11C — SELLOS SELECCIONABLES Y LORE DEL RECEPCIONISTA */
+.document-card .institutional-stamp { pointer-events: auto !important; cursor: crosshair !important; z-index: 18 !important; }
+#receptionist-lore { margin-top: 18px; padding: 14px 18px; border: 2px dotted #5e5645; background: rgba(75,65,48,.09); }
+#receptionist-lore h3 { margin: 0 0 6px; font-size: 25px; }
+#receptionist-lore p { margin: 0; font-size: 23px; line-height: 1.25; }
+.valid-stamps-grid img { width: 50px !important; height: 38px !important; }
+.valid-stamps-grid figcaption { font-size: 11px !important; }

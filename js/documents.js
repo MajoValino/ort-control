@@ -97,7 +97,7 @@ function renderDocument(type, data, uid, index) {
         source: 'document', element: node, documentElement: wrapper,
         documentType: type, documentLabel: config.label,
         field, fieldLabel: FIELD_LABELS[field] || field,
-        value: String(value), isActualError: Boolean(issue), issueMessage: issue?.message || ''
+        value: field === 'photo' ? 'Fotografía del titular' : String(value), isActualError: Boolean(issue), issueMessage: issue?.message || ''
       });
     });
     card.appendChild(node);

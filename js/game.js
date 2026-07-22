@@ -45,6 +45,11 @@ const transcriptOverlayEl = document.getElementById('transcript-overlay');
 const btnCloseTranscriptEl = document.getElementById('btn-close-transcript');
 const transcriptContentEl = document.getElementById('transcript-content');
 const transcriptCharacterNameEl = document.getElementById('transcript-character-name');
+const endingTitleEl = document.getElementById('ending-title');
+const endingStoryEl = document.getElementById('ending-story');
+const endingStatsEl = document.getElementById('ending-stats');
+const endingHighlightsEl = document.getElementById('ending-highlights');
+const endingStampEl = document.getElementById('ending-stamp');
 
 if (transcriptToggleEl) transcriptToggleEl.addEventListener('click', () => transcriptOverlayEl.classList.remove('hidden'));
 if (btnCloseTranscriptEl) btnCloseTranscriptEl.addEventListener('click', () => transcriptOverlayEl.classList.add('hidden'));
@@ -77,12 +82,15 @@ function loadDay(dayNumber) {
   bulletinObs.innerHTML = day.observations.map(item => `<li>${item}</li>`).join('');
   bulletinReminders.innerHTML = day.reminder.map(item => `<li>${item}</li>`).join('');
   bulletinLore.textContent = day.lore;
-  bulletinNewDocs.innerHTML = day.introducedDocuments.map(type => `<span>${DOCUMENT_LABELS[type]}</span>`).join('');
+  bulletinNewDocs.innerHTML = day.introducedDocuments.length
+    ? day.introducedDocuments.map(type => `<span>${DOCUMENT_LABELS[type]}</span>`).join('')
+    : '<span>Se mantienen todos los documentos anteriores.</span>';
   hudDayEl.textContent = `DÍA ${day.day}`;
   hudDateEl.textContent = day.date;
   document.querySelectorAll('.stamp-date').forEach(node => { node.textContent = day.date; });
   renderRulebook(day);
   showScreen('bulletin');
+  if (typeof playGameSound === 'function') playGameSound('day');
 }
 
 function beginWorkDay() {
@@ -311,57 +319,22 @@ async function sendQuestion(question, options = {}) {
 
 function renderRulebook(day) {
   rulebookDayTitleEl.textContent = `DÍA ${day.day}`;
-
   const requirementsByDay = {
-    1: [
-      { id: 'access-day-1', type: 'category', label: 'INGRESO HABILITADO: estudiantes y docentes.' },
-      { id: 'identity-student', type: 'identity', label: 'ESTUDIANTE: documento de identidad.' },
-      { id: 'identity-teacher', type: 'identity', label: 'DOCENTE: documento de identidad.' }
-    ],
-    2: [
-      { id: 'access-day-2', type: 'category', label: 'INGRESO HABILITADO: estudiantes y docentes.' },
-      { id: 'new-student', type: 'identity', label: 'ASPIRANTE NUEVO: identidad + carta de admisión.' },
-      { id: 'regular-student', type: 'identity', label: 'ESTUDIANTE REGULAR: identidad + constancia de inscripción + certificado de estudios.' },
-      { id: 'teacher-day-2', type: 'identity', label: 'DOCENTE: documento de identidad.' }
-    ],
-    3: [
-      { id: 'access-day-3', type: 'category', label: 'INGRESO HABILITADO: estudiantes, docentes, visitantes y proveedores.' },
-      { id: 'new-student-day-3', type: 'identity', label: 'ASPIRANTE NUEVO: identidad + carta de admisión.' },
-      { id: 'regular-student-day-3', type: 'identity', label: 'ESTUDIANTE REGULAR: identidad + constancia de inscripción + certificado de estudios.' },
-      { id: 'teacher-day-3', type: 'identity', label: 'DOCENTE: documento de identidad.' },
-      { id: 'visitor-day-3', type: 'identity', label: 'VISITANTE: identidad + pase de visitante.' },
-      { id: 'provider-day-3', type: 'identity', label: 'PROVEEDOR: identidad + orden de servicio.' }
-    ]
+    1: [['category','INGRESO: estudiantes y docentes.'],['identity','ESTUDIANTE: documento de identidad.'],['identity','DOCENTE: documento de identidad.']],
+    2: [['category','INGRESO: estudiantes y docentes.'],['identity','ASPIRANTE NUEVO: identidad + carta de admisión.'],['identity','ESTUDIANTE REGULAR: identidad + constancia + certificado.'],['identity','DOCENTE: documento de identidad.']],
+    3: [['category','INGRESO: estudiantes, docentes, visitantes y proveedores.'],['identity','ASPIRANTE: identidad + carta de admisión.'],['identity','ESTUDIANTE REGULAR: identidad + constancia + certificado.'],['identity','DOCENTE: identidad.'],['identity','VISITANTE: identidad + pase.'],['identity','PROVEEDOR: identidad + orden de servicio.']],
+    4: [['category','INGRESO: estudiantes, docentes, visitantes, proveedores y excepciones.'],['identity','ASPIRANTE: identidad + carta de admisión.'],['identity','ESTUDIANTE REGULAR: identidad + constancia + certificado.'],['identity','DOCENTE: identidad.'],['identity','VISITANTE: identidad + pase.'],['identity','PROVEEDOR: identidad + orden.'],['identity','EXCEPCIÓN: identidad + permiso especial.']],
+    5: [['category','AUDITORÍA: todas las categorías están habilitadas.'],['identity','ASPIRANTE: identidad + carta de admisión.'],['identity','ESTUDIANTE REGULAR: identidad + constancia + certificado.'],['identity','DOCENTE: identidad.'],['identity','VISITANTE: identidad + pase.'],['identity','PROVEEDOR: identidad + orden.'],['identity','EXCEPCIÓN: identidad + permiso especial.']]
   };
-
-  const validations = [
-    { id: 'val-identity', type: 'identity', label: 'IDENTIDAD: nombre y apellido deben coincidir con los demás documentos.' },
-    { id: 'val-codes', type: 'code', label: 'CÓDIGOS: compare los 4 dígitos finales; los prefijos pueden ser distintos.' }
-  ];
-  if (day.day >= 2) {
-    validations.push(
-      { id: 'val-academic', type: 'academic', label: 'DOCUMENTOS ACADÉMICOS: carrera y período deben coincidir.' },
-      { id: 'val-enrollment-stamp', type: 'stamp', label: 'CONSTANCIA: requiere sello de Admisiones.' },
-      { id: 'val-certificate-stamp', type: 'stamp', label: 'CERTIFICADO: requiere sello de Facultad.' }
-    );
-  }
-  if (day.day >= 3) {
-    validations.push(
-      { id: 'val-visitor', type: 'external', label: 'PASE DE VISITANTE: área, motivo, fecha y sello de Administración.' },
-      { id: 'val-provider', type: 'external', label: 'ORDEN DE SERVICIO: empresa, área, motivo, fecha y sello de Administración.' }
-    );
-  }
-
-  const renderRules = rules => rules.map(rule =>
-    `<button type="button" class="rule-evidence" data-rule-id="${rule.id}" data-rule-type="${rule.type}">${rule.label}</button>`
-  ).join('');
-
-  if (rulebookRulesLeftEl) rulebookRulesLeftEl.innerHTML = renderRules(requirementsByDay[day.day] || requirementsByDay[1]);
-  if (rulebookRulesRightEl) rulebookRulesRightEl.innerHTML = renderRules(validations);
-
-  document.querySelectorAll('#rulebook-overlay .rule-evidence').forEach(button => button.addEventListener('click', () => {
-    addEvidence({ source: 'rule', element: button, ruleId: button.dataset.ruleId, ruleType: button.dataset.ruleType, documentLabel: 'Reglamento', fieldLabel: 'Regla', value: button.textContent, isActualError: false });
-  }));
+  const validations = [['identity','IDENTIDAD: nombre y apellido deben coincidir.'],['code','CÓDIGOS: compare solamente los 4 dígitos finales.']];
+  if (day.day >= 2) validations.push(['academic','ACADÉMICOS: carrera y período deben coincidir.'],['stamp','CONSTANCIA: sello de Admisiones. CERTIFICADO: sello de Facultad.']);
+  if (day.day >= 3) validations.push(['external','PASE Y ORDEN: área, motivo y fecha vigentes.'],['stamp','PASE Y ORDEN: sello de Administración.']);
+  if (day.day >= 4) validations.push(['permit','PERMISO ESPECIAL: fecha vigente y autoridad Rectorado.'],['stamp','PERMISO ESPECIAL: sello Institucional auténtico.']);
+  const makeRules = (rules, side) => rules.map((rule,index) => ({id:`${side}-${day.day}-${index}`,type:rule[0],label:rule[1]}));
+  const renderRules = rules => rules.map(rule => `<button type="button" class="rule-evidence" data-rule-id="${rule.id}" data-rule-type="${rule.type}">${rule.label}</button>`).join('');
+  rulebookRulesLeftEl.innerHTML = renderRules(makeRules(requirementsByDay[day.day] || requirementsByDay[1],'req'));
+  rulebookRulesRightEl.innerHTML = renderRules(makeRules(validations,'val'));
+  document.querySelectorAll('#rulebook-overlay .rule-evidence').forEach(button => button.addEventListener('click', () => addEvidence({source:'rule',element:button,ruleId:button.dataset.ruleId,ruleType:button.dataset.ruleType,documentLabel:'Reglamento',fieldLabel:'Regla',value:button.textContent,isActualError:false})));
 }
 function openRulebook() { rulebookOverlayEl.classList.remove('hidden'); }
 function closeRulebook() { rulebookOverlayEl.classList.add('hidden'); }
@@ -454,6 +427,7 @@ function compareEvidence() {
     }
   }
   showTurnNotification(message, discrepancy ? 'denied-notif' : comparable ? 'approved-notif' : 'warning-notif');
+  if (typeof playGameSound === 'function') playGameSound('compare');
   setTimeout(() => showTurnNotification('', ''), 1800);
 }
 
@@ -472,13 +446,14 @@ function makeDecision(decision) {
   const selected = getSelectedDocument();
   if (!selected) { showTurnNotification('SELECCIONE UN DOCUMENTO PARA SELLAR', 'warning-notif'); return; }
   applyDecisionStamp(selected, decision, getDayData().date);
+  if (typeof playGameSound === 'function') playGameSound(decision === 'approved' ? 'approve' : 'deny');
   const isCorrect = character.correctDecision === decision;
   const points = isCorrect ? 50 : -20;
   gameState.score += points;
   if (decision === 'denied') gameState.receptionist.strictness += 1;
   else gameState.receptionist.compassion += 1;
   if (!isCorrect) gameState.receptionist.errors += 1;
-  gameState.decisions.push({ characterId: character.id, characterName: character.displayName, decision, correctDecision: character.correctDecision, isCorrect, points, day: gameState.currentDay });
+  gameState.decisions.push({ characterId: character.id, characterName: character.displayName, decision, correctDecision: character.correctDecision, isCorrect, points, day: gameState.currentDay, finalCase: Boolean(character.finalCase), hiddenError: character.hiddenError });
   const key = decision === 'approved' ? (isCorrect ? 'approvedCorrect' : 'approvedWrong') : (isCorrect ? 'deniedCorrect' : 'deniedWrong');
   gameState.pendingAdvance = true;
   setChatEnabled(false);
@@ -510,13 +485,24 @@ function showTurnNotification(text, className) {
   if (className) turnNotifEl.classList.add(className);
 }
 
-function getEndingText() {
+function getEndingData() {
   const total = gameState.decisions.length || 1;
   const correct = gameState.decisions.filter(item => item.isCorrect).length;
-  const rate = correct / total;
-  if (rate >= 0.8 && gameState.receptionist.errors <= 2) return 'FINAL PROVISORIO: INSPECTOR MODELO — Dirección reconoce su criterio y le ofrece continuar en el cargo.';
-  if (rate < 0.5) return 'FINAL PROVISORIO: BAJO OBSERVACIÓN — Sus errores generan una auditoría sobre la oficina.';
-  return 'FINAL PROVISORIO: FUNCIONARIO FLEXIBLE — Su trato humano es valorado, aunque Dirección cuestiona algunas decisiones.';
+  const incorrect = total - correct;
+  const approvedErrors = gameState.decisions.filter(item => item.decision === 'approved' && !item.isCorrect).length;
+  const accuracy = correct / total;
+  if (accuracy >= 0.85 && approvedErrors === 0) return { key:'model', title:'INSPECTOR MODELO', stamp:'ASCENSO APROBADO', story:'La auditoría confirmó que cada ingreso irregular fue detenido sin paralizar la institución. Rectorado le ofrece dirigir el nuevo Departamento de Control Documental. El puesto dejó de ser una ventanilla: ahora sus reglas definirán el acceso de toda la universidad.', correct, incorrect, accuracy };
+  if (accuracy < 0.6 || approvedErrors >= 3) return { key:'investigation', title:'BAJO INVESTIGACIÓN', stamp:'EXPEDIENTE OBSERVADO', story:'Los auditores encontraron demasiadas autorizaciones incorrectas. Varias personas ingresaron con documentos inválidos y su firma aparece en cada resolución. Su credencial queda suspendida mientras el Consejo determina responsabilidades.', correct, incorrect, accuracy };
+  return { key:'human', title:'EL CRITERIO HUMANO', stamp:'CONTINUIDAD CONDICIONAL', story:'Su expediente contiene errores, pero también testimonios de personas a las que escuchó antes de decidir. Rectorado cuestiona su flexibilidad; la comunidad defiende su criterio. Conserva el cargo con una advertencia: ninguna regla reemplaza por completo a quien la aplica.', correct, incorrect, accuracy };
+}
+function showFinalEnding() {
+  const ending = getEndingData();
+  endingTitleEl.textContent = ending.title; endingStoryEl.textContent = ending.story; endingStampEl.textContent = ending.stamp; endingStampEl.className = `ending-stamp ending-${ending.key}`;
+  endingStatsEl.innerHTML = [['CASOS REVISADOS',gameState.decisions.length],['DECISIONES CORRECTAS',ending.correct],['ERRORES',ending.incorrect],['PRECISIÓN',`${Math.round(ending.accuracy*100)}%`]].map(([label,value]) => `<div><strong>${value}</strong><span>${label}</span></div>`).join('');
+  const highlights = gameState.decisions.filter(item => !item.isCorrect || item.finalCase).slice(-3);
+  endingHighlightsEl.innerHTML = highlights.length ? highlights.map(item => `<p><strong>${item.characterName}</strong>: ${item.decision === 'approved' ? 'APROBADO' : 'DENEGADO'} — ${item.isCorrect ? 'decisión ajustada al reglamento' : 'decisión cuestionada por la auditoría'}.</p>`).join('') : '<p>No se registraron incidentes relevantes.</p>';
+  document.getElementById('ending-unlocked').textContent = `FINAL DESCUBIERTO: ${ending.key === 'model' ? '1' : ending.key === 'human' ? '2' : '3'} DE 3`;
+  showScreen('ending'); if (typeof playGameSound === 'function') playGameSound('ending');
 }
 function showEndDaySummary() {
   clearDocuments();
@@ -534,7 +520,7 @@ function showEndDaySummary() {
   ].map(text => `<li>${text}</li>`).join('');
   summaryScore.textContent = `Puntaje acumulado: ${gameState.score}`;
   receptionistLoreEl.innerHTML = `<h3>DESPUÉS DEL TURNO</h3><p>${getDayData().receptionistLore}</p>`;
-  endingPreviewEl.textContent = gameState.currentDay === DAYS.length ? getEndingText() : '';
+  endingPreviewEl.textContent = gameState.currentDay === DAYS.length ? 'La auditoría final está lista. Su expediente determinará el desenlace.' : '';
   btnNextDay.textContent = gameState.currentDay < DAYS.length ? 'SIGUIENTE DÍA ▶' : 'VER RESULTADO ▶';
   showScreen('endDay');
 }

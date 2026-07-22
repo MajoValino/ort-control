@@ -80,6 +80,32 @@ const DAYS = [
     ],
     receptionistLore: 'La oficina ya no parece una simple recepción. Sus decisiones empezaron a afectar a estudiantes, docentes y personal externo, y Dirección observa sus resultados.',
     characterIds: ['visitor-01', 'visitor-02', 'provider-01', 'provider-02']
+  },
+  {
+    day: 4,
+    date: '21/07/2026',
+    lore: 'Auditoría encontró permisos especiales copiados. Desde hoy, toda excepción debe incluir identidad, permiso vigente y sello institucional auténtico.',
+    newRule: ['Toda excepción requiere Identidad y Permiso especial.', 'Compare autoridad, fecha, código y sello con los modelos del reglamento.'],
+    observations: ['El permiso especial usa código AUT-.', 'El sello válido es Institucional.', 'Los cuatro dígitos deben coincidir con la identidad.'],
+    reminder: ['Un espacio vacío no equivale a un sello válido.', 'Seleccione el sello o el campo sospechoso y compárelo con la regla.'],
+    introducedDocuments: ['specialPermit'],
+    allowedRoles: ['estudiante', 'docente', 'administrativo', 'visitante'],
+    instructionSteps: ['Revise las reglas acumuladas en el cuaderno.', 'Toda excepción exige identidad y permiso especial.', 'Compare nombre, fecha, autoridad y cuatro dígitos.', 'Verifique visualmente el sello Institucional válido.', 'Los permisos sin sello o con autoridad incorrecta deben denegarse.'],
+    receptionistLore: 'Los permisos falsos no parecían obra de estudiantes improvisados. Alguien conocía los formularios internos y Dirección comenzó a revisar cada decisión de la oficina.',
+    characterIds: ['admin-01', 'visitor-03', 'student-07', 'teacher-02']
+  },
+  {
+    day: 5,
+    date: '22/07/2026',
+    lore: 'Rectorado inicia la auditoría final. Todas las categorías quedan habilitadas, pero cada documento y cada conversación serán incorporados a su expediente laboral.',
+    newRule: ['AUDITORÍA FINAL: se mantienen todas las reglas.', 'Estudiantes, docentes, visitantes, proveedores y excepciones deben presentar la documentación exacta de su categoría.'],
+    observations: ['Revise identidad, categoría, fechas, códigos y sellos.', 'No acepte permisos de una categoría para otra.', 'Sus decisiones de hoy definirán el informe final.'],
+    reminder: ['Consulte el cuaderno antes de decidir.', 'Una decisión humana también deja consecuencias.'],
+    introducedDocuments: [],
+    allowedRoles: ['estudiante', 'docente', 'visitante', 'proveedor', 'administrativo'],
+    instructionSteps: ['Aplique todas las reglas de los días anteriores.', 'Identifique primero la categoría de cada persona.', 'Exija los documentos exactos indicados en el cuaderno.', 'Compare los cuatro dígitos, fechas, áreas y sellos.', 'La auditoría evaluará precisión, seguridad y criterio.'],
+    receptionistLore: 'La oficina quedó en silencio cuando llegó el último expediente. Ya no se evaluaban únicamente documentos: también se evaluaba la forma en que usted había usado el poder del puesto.',
+    characterIds: ['student-10', 'visitor-04', 'provider-03', 'admin-02']
   }
 ];
 
@@ -122,6 +148,15 @@ function enrollment(fullName, career, semester, date, recordId, valid = true) {
   };
 }
 
+function specialPermit(fullName, exceptionType, date, authority, observations, recordId, valid = true) {
+  return {
+    name: fullName.toUpperCase(), exceptionType: exceptionType.toUpperCase(), date,
+    authorizingAuthority: authority.toUpperCase(), observations: observations.toUpperCase(),
+    authorizationCode: `AUT-${recordId}`, signature: authority.toUpperCase(),
+    stamps: valid ? [{ type: 'institutional', valid: true }] : [],
+    issues: valid ? [] : [{ field: 'stamp', message: 'Falta el sello Institucional obligatorio.' }]
+  };
+}
 const CHARACTERS = [
   {
     id: 'student-01', image: 'assets/personajes/estudiantes/estudiante_01.png', gender: 'male', role: 'estudiante',
@@ -292,6 +327,74 @@ const CHARACTERS = [
       identity: identity('Andrea', 'Paz', '4.144.862-0', 'Uruguay', '4824', 'assets/personajes/provedores/proveedor_02.png'),
       serviceOrder: { name: 'ANDREA PAZ', companyService: 'IMPRENTA', reason: 'ENTREGA DE FORMULARIOS', authorizedArea: 'BEDELÍA', date: '19/07/2026', signature: 'ADMINISTRACIÓN', approval: 'APROBADO', orderCode: 'SER-4824', stamps: [{ type: 'administration', valid: true }], issues: [{ field: 'date', message: 'La orden no corresponde a la fecha actual.' }] }
     }
+  },
+  {
+    id: 'admin-01', image: 'assets/personajes/administrativos/administrativo_01.png', gender: 'female', role: 'administrativo',
+    firstName: 'Carlos', lastName: 'Viera', displayName: 'Carlos Viera', age: 39, careerOrDepartment: 'Archivo', personality: 'serena', recordId: '6104',
+    correctDecision: 'approved', hiddenError: null, greeting: 'Buen día. Tengo autorización para ingresar al archivo restringido.', reactions: reactions(),
+    responses: { nombre: 'Carlos Viera.', motivo: 'Debo retirar expedientes del archivo.', documentos: 'Identidad y permiso especial.', default: 'La autorización fue emitida por Rectorado.' }, issueResponses: {},
+    requiredDocuments: ['identity', 'specialPermit'], documents: {
+      identity: identity('Carlos', 'Viera', '3.954.610-4', 'Uruguay', '6104', 'assets/personajes/administrativos/administrativo_01.png'),
+      specialPermit: specialPermit('Carlos Viera', 'Acceso a archivo', '21/07/2026', 'Rectorado', 'Retiro de expedientes', '6104', true)
+    }
+  },
+  {
+    id: 'visitor-03', image: 'assets/personajes/visitantes/visitante_03.png', gender: 'male', role: 'visitante',
+    firstName: 'Martín', lastName: 'Leiva', displayName: 'Martín Leiva', age: 34, careerOrDepartment: 'Sala de servidores', personality: 'evasivo', recordId: '6271',
+    correctDecision: 'denied', hiddenError: 'El permiso especial no tiene sello Institucional.', greeting: 'Me autorizaron a revisar un equipo en la sala de servidores.', reactions: reactions(),
+    responses: { nombre: 'Martín Leiva.', motivo: 'Es una revisión técnica urgente.', documentos: 'Identidad y permiso especial.', default: 'Me entregaron el permiso así.' }, issueResponses: { stamp: 'No sé por qué no está sellado. Me dijeron que era urgente.' },
+    requiredDocuments: ['identity', 'specialPermit'], documents: {
+      identity: identity('Martín', 'Leiva', '4.207.627-1', 'Uruguay', '6271', 'assets/personajes/visitantes/visitante_03.png'),
+      specialPermit: specialPermit('Martín Leiva', 'Acceso técnico', '21/07/2026', 'Rectorado', 'Sala de servidores', '6271', false)
+    }
+  },
+  {
+    id: 'student-07', image: 'assets/personajes/estudiantes/estudiante_07.png', gender: 'female', role: 'estudiante',
+    firstName: 'Lucía', lastName: 'Ferreira', displayName: 'Lucía Ferreira', age: 22, careerOrDepartment: 'Laboratorio', personality: 'nerviosa', recordId: '6388',
+    correctDecision: 'denied', hiddenError: 'La autoridad del permiso no está habilitada.', greeting: 'Tengo permiso para trabajar fuera de horario en el laboratorio.', reactions: reactions(),
+    responses: { nombre: 'Lucía Ferreira.', motivo: 'Necesito terminar una práctica.', documentos: 'Identidad y permiso especial.', default: 'Mi docente firmó la autorización.' }, issueResponses: { authorizingAuthority: 'La firmó mi docente. Pensé que era suficiente.' },
+    requiredDocuments: ['identity', 'specialPermit'], documents: {
+      identity: identity('Lucía', 'Ferreira', '5.114.638-8', 'Uruguay', '6388', 'assets/personajes/estudiantes/estudiante_07.png'),
+      specialPermit: { ...specialPermit('Lucía Ferreira', 'Laboratorio nocturno', '21/07/2026', 'Docente de curso', 'Práctica final', '6388', true), issues: [{ field: 'authorizingAuthority', message: 'La autorización debe provenir de Rectorado.' }] }
+    }
+  },
+  {
+    id: 'teacher-02', image: 'assets/personajes/docentes/profe_4.png', gender: 'female', role: 'docente',
+    firstName: 'Mariana', lastName: 'Rossi', displayName: 'Prof. Mariana Rossi', age: 47, careerOrDepartment: 'Investigación', personality: 'directa', recordId: '6495',
+    correctDecision: 'approved', hiddenError: null, greeting: 'Rectorado autorizó mi ingreso al depósito de investigación.', reactions: reactions(),
+    responses: { nombre: 'Mariana Rossi.', motivo: 'Retiro material de investigación.', documentos: 'Identidad y permiso especial.', default: 'Puede verificar la firma y el sello.' }, issueResponses: {},
+    requiredDocuments: ['identity', 'specialPermit'], documents: {
+      identity: identity('Mariana', 'Rossi', '3.867.649-5', 'Uruguay', '6495', 'assets/personajes/docentes/profe_4.png'),
+      specialPermit: specialPermit('Mariana Rossi', 'Depósito de investigación', '21/07/2026', 'Rectorado', 'Retiro autorizado', '6495', true)
+    }
+  },
+  {
+    id: 'student-10', image: 'assets/personajes/estudiantes/estudiante_10.png', gender: 'male', role: 'estudiante',
+    firstName: 'Nicolás', lastName: 'Ibarra', displayName: 'Nicolás Ibarra', age: 20, careerOrDepartment: 'Comunicación', personality: 'atento', recordId: '7012',
+    correctDecision: 'approved', hiddenError: null, greeting: 'Vengo a validar mi inscripción como estudiante regular.', reactions: reactions(),
+    responses: { nombre: 'Nicolás Ibarra.', carrera: 'Comunicación.', documentos: 'Identidad, constancia y certificado.', default: 'Revisé todo antes de venir.' }, issueResponses: {}, requiredDocuments: ['identity', 'enrollment', 'studyCertificate'],
+    documents: { identity: identity('Nicolás','Ibarra','5.006.701-2','Uruguay','7012','assets/personajes/estudiantes/estudiante_10.png'), enrollment: enrollment('Nicolás Ibarra','Comunicación','2º semestre','22/07/2026','7012'), studyCertificate: certificate('Nicolás Ibarra','Liceo Central','Promedio 8,7','20/07/2026','7012') }
+  },
+  {
+    id: 'visitor-04', image: 'assets/personajes/visitantes/visitante_04.png', gender: 'female', role: 'visitante',
+    firstName: 'Paula', lastName: 'Mora', displayName: 'Paula Mora', age: 42, careerOrDepartment: 'Auditorio', personality: 'segura', recordId: '7146',
+    correctDecision: 'denied', hiddenError: 'El código del pase no coincide con la identidad.', greeting: 'Tengo una invitación para el Auditorio.', reactions: reactions(),
+    responses: { nombre: 'Paula Mora.', motivo: 'Asisto a una conferencia.', documentos: 'Identidad y pase.', default: 'El pase llegó por correo.' }, issueResponses: { passCode: 'Mi expediente termina en 7146, no en el número que aparece allí.' }, requiredDocuments: ['identity','visitorPass'],
+    documents: { identity: identity('Paula','Mora','4.195.714-6','Uruguay','7146','assets/personajes/visitantes/visitante_04.png'), visitorPass: { name:'PAULA MORA', visitReason:'CONFERENCIA', authorizedArea:'AUDITORIO', date:'22/07/2026', time:'15:00', signature:'RECEPCIÓN', passCode:'VIS-7196', stamps:[{type:'administration',valid:true}], issues:[{field:'passCode',message:'Los cuatro dígitos no coinciden.'}] } }
+  },
+  {
+    id: 'provider-03', image: 'assets/personajes/provedores/proveedor_03.png', gender: 'male', role: 'proveedor',
+    firstName: 'Soledad', lastName: 'Suárez', displayName: 'Soledad Suárez', age: 38, careerOrDepartment: 'Soporte técnico', personality: 'profesional', recordId: '7280',
+    correctDecision: 'approved', hiddenError: null, greeting: 'Traigo una orden para soporte en el laboratorio.', reactions: reactions(),
+    responses: { nombre:'Soledad Suárez.', motivo:'Reemplazo de un equipo.', documentos:'Identidad y orden de servicio.', default:'Administración emitió la orden esta mañana.' }, issueResponses:{}, requiredDocuments:['identity','serviceOrder'],
+    documents:{ identity:identity('Soledad','Suárez','4.399.728-0','Uruguay','7280','assets/personajes/provedores/proveedor_03.png'), serviceOrder:{name:'Soledad SUÁREZ',companyService:'SOPORTE TÉCNICO',reason:'REEMPLAZO DE EQUIPO',authorizedArea:'LABORATORIO',date:'22/07/2026',signature:'ADMINISTRACIÓN',approval:'APROBADO',orderCode:'SER-7280',stamps:[{type:'administration',valid:true}],issues:[]} }
+  },
+  {
+    id: 'admin-02', image: 'assets/personajes/administrativos/administrativo_02.png', gender: 'male', role: 'administrativo',
+    firstName: 'Gabriela', lastName: 'Ramos', displayName: 'Gabriela Ramos', age: 56, careerOrDepartment: 'Rectorado', personality: 'cansado y honesto', recordId: '7393', finalCase: true,
+    correctDecision: 'denied', hiddenError: 'El permiso especial venció el día anterior.', greeting: 'Soy quien ordenó esta auditoría. Necesito entrar al archivo antes de que cierre.', reactions: reactions(),
+    responses:{ nombre:'Gabriela Ramos.', motivo:'Debo retirar el informe de auditoría.', documentos:'Identidad y permiso especial.', default:'Sé que la fecha es de ayer. Usted decide si la norma admite una excepción.' }, issueResponses:{date:'El permiso venció ayer. Si me rechaza, el informe no llegará hoy al Consejo.'}, requiredDocuments:['identity','specialPermit'],
+    documents:{ identity:identity('Gabriela','Ramos','2.844.739-3','Uruguay','7393','assets/personajes/administrativos/administrativo_02.png'), specialPermit:{...specialPermit('Gabriela Ramos','Acceso a archivo','21/07/2026','Rectorado','Retiro de auditoría','7393',true),issues:[{field:'date',message:'El permiso venció el día anterior.'}]} }
   }
 ];
 

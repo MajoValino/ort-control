@@ -133,13 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-next-day').addEventListener('click', () => {
     if (gameState.currentDay >= DAYS.length) {
-      showScreen('start');
+      showFinalEnding();
       return;
     }
     loadDay(gameState.currentDay + 1);
   });
 
   // ─── DIÁLOGO ────────────────────────────────────────────────
+  document.getElementById('btn-ending-replay').addEventListener('click', () => initGameSession());
+  document.getElementById('btn-ending-menu').addEventListener('click', () => showScreen('start'));
+
   document.getElementById('chat-send').addEventListener('click', () => {
     sendQuestion(document.getElementById('chat-input').value);
   });
