@@ -1873,3 +1873,35 @@ h1, h2, h3, p, span, button, input, li, div {
 #receptionist-lore p { margin: 0; font-size: 23px; line-height: 1.25; }
 .valid-stamps-grid img { width: 50px !important; height: 38px !important; }
 .valid-stamps-grid figcaption { font-size: 11px !important; }
+/* REVISION 12 — ALINEACION DEL PERMISO ESPECIAL */
+.special-permit-document .field-name {
+  top: 42.2% !important; left: 43% !important; max-width: 48% !important;
+  font-size: 16px !important; white-space: nowrap !important;
+}
+.special-permit-document .field-exceptionType {
+  top: 47.5% !important; left: 43% !important; max-width: 48% !important;
+  font-size: 15px !important; white-space: nowrap !important;
+}
+.special-permit-document .field-date {
+  top: 56.5% !important; left: 47% !important; font-size: 15px !important;
+}
+.special-permit-document .field-authorizingAuthority {
+  top: 61.2% !important; left: 45% !important; max-width: 45% !important;
+  font-size: 14px !important; white-space: nowrap !important;
+}
+.special-permit-document .field-observations {
+  top: 89.2% !important; left: 9% !important; max-width: 55% !important;
+  font-size: 13px !important; white-space: nowrap !important;
+}
+.special-permit-document .field-signature {
+  top: 82.5% !important; left: 61% !important; max-width: 30% !important;
+  font-size: 12px !important; text-align: center !important;
+}
+.special-permit-document .field-authorizationCode {
+  top: auto !important; right: 7% !important; bottom: 7.5% !important;
+  font-size: 14px !important;
+}
+.special-permit-document .institutional-stamp {
+  top: 71.5% !important; left: 9% !important; width: 35% !important; height: 15% !important;
+  object-fit: contain !important;
+}

@@ -26,7 +26,7 @@ const DAYS = [
       'Sellar: Abra la bandeja de sellos abajo a la derecha y aplique APROBADO o DENEGADO.'
     ],
     receptionistLore: 'Primer día en Admisiones. El flujo fue tranquilo, pero Rectorado dejó claro que cada omisión quedará registrada en su legajo.',
-    characterIds: ['student-01', 'student-03', 'teacher-01', 'student-04']
+    characterIds: ['student-01', 'student-03', 'teacher-01', 'student-04', 'valerys-01']
   },
   {
     day: 2,
@@ -53,7 +53,7 @@ const DAYS = [
       'Use el cuaderno para comparar evidencias antes de decidir.'
     ],
     receptionistLore: 'El rumor sobre documentos alterados aumentó la tensión. Algunos aspirantes culpan al sistema; otros parecen conocer demasiado bien sus fallas.',
-    characterIds: ['student-02', 'student-05', 'student-06', 'student-09']
+    characterIds: ['student-02', 'student-05', 'student-06', 'student-09', 'valerys-02']
   },
   {
     day: 3,
@@ -79,7 +79,7 @@ const DAYS = [
       'Use la evidencia y el cuaderno antes de sellar.'
     ],
     receptionistLore: 'La oficina ya no parece una simple recepción. Sus decisiones empezaron a afectar a estudiantes, docentes y personal externo, y Dirección observa sus resultados.',
-    characterIds: ['visitor-01', 'visitor-02', 'provider-01', 'provider-02']
+    characterIds: ['visitor-01', 'visitor-02', 'provider-01', 'provider-02', 'valerys-03']
   },
   {
     day: 4,
@@ -92,7 +92,7 @@ const DAYS = [
     allowedRoles: ['estudiante', 'docente', 'administrativo', 'visitante'],
     instructionSteps: ['Revise las reglas acumuladas en el cuaderno.', 'Toda excepción exige identidad y permiso especial.', 'Compare nombre, fecha, autoridad y cuatro dígitos.', 'Verifique visualmente el sello Institucional válido.', 'Los permisos sin sello o con autoridad incorrecta deben denegarse.'],
     receptionistLore: 'Los permisos falsos no parecían obra de estudiantes improvisados. Alguien conocía los formularios internos y Dirección comenzó a revisar cada decisión de la oficina.',
-    characterIds: ['admin-01', 'visitor-03', 'student-07', 'teacher-02']
+    characterIds: ['admin-01', 'visitor-03', 'student-07', 'teacher-02', 'valerys-04']
   },
   {
     day: 5,
@@ -105,7 +105,7 @@ const DAYS = [
     allowedRoles: ['estudiante', 'docente', 'visitante', 'proveedor', 'administrativo'],
     instructionSteps: ['Aplique todas las reglas de los días anteriores.', 'Identifique primero la categoría de cada persona.', 'Exija los documentos exactos indicados en el cuaderno.', 'Compare los cuatro dígitos, fechas, áreas y sellos.', 'La auditoría evaluará precisión, seguridad y criterio.'],
     receptionistLore: 'La oficina quedó en silencio cuando llegó el último expediente. Ya no se evaluaban únicamente documentos: también se evaluaba la forma en que usted había usado el poder del puesto.',
-    characterIds: ['student-10', 'visitor-04', 'provider-03', 'admin-02']
+    characterIds: ['student-10', 'visitor-04', 'provider-03', 'admin-02', 'valerys-05']
   }
 ];
 
@@ -223,13 +223,13 @@ const CHARACTERS = [
     id: 'student-02', image: 'assets/personajes/estudiantes/estudiante_02.png', gender: 'female', role: 'estudiante',
     firstName: 'Sofía', lastName: 'Acosta', displayName: 'Sofía Acosta', age: 21,
     careerOrDepartment: 'Diseño Digital', personality: 'serena y reservada', recordId: '1190',
-    correctDecision: 'approved', hiddenError: null,
+    correctDecision: 'denied', hiddenError: 'El apellido de la carta de admisión no coincide con la identidad.',
     greeting: 'Buenos días. Traje la documentación de ingreso.', reactions: reactions(),
     responses: { nombre: 'Sofía Acosta.', carrera: 'Diseño Digital.', documentos: 'Identidad y carta de admisión.', default: 'Soy aspirante nueva.' },
-    issueResponses: {}, requiredDocuments: ['identity', 'admission'],
+    issueResponses: { applicantName: 'Mi apellido es Acosta, con T. La carta debe tener un error de tipeo.' }, requiredDocuments: ['identity', 'admission'],
     documents: {
       identity: identity('Sofía', 'Acosta', '4.692.104-3', 'Montevideo', '1190', 'assets/personajes/estudiantes/estudiante_02.png'),
-      admission: admission('Sofía Acosta', 'Diseño Digital', 'Facultad de Diseño', '19/07/2026', '1190')
+      admission: { ...admission('Sofía Acosa', 'Diseño Digital', 'Facultad de Diseño', '19/07/2026', '1190'), issues: [{ field: 'applicantName', message: 'El apellido difiere por una letra respecto de la identidad.' }] }
     }
   },
   {
@@ -395,6 +395,72 @@ const CHARACTERS = [
     correctDecision: 'denied', hiddenError: 'El permiso especial venció el día anterior.', greeting: 'Soy quien ordenó esta auditoría. Necesito entrar al archivo antes de que cierre.', reactions: reactions(),
     responses:{ nombre:'Gabriela Ramos.', motivo:'Debo retirar el informe de auditoría.', documentos:'Identidad y permiso especial.', default:'Sé que la fecha es de ayer. Usted decide si la norma admite una excepción.' }, issueResponses:{date:'El permiso venció ayer. Si me rechaza, el informe no llegará hoy al Consejo.'}, requiredDocuments:['identity','specialPermit'],
     documents:{ identity:identity('Gabriela','Ramos','2.844.739-3','Uruguay','7393','assets/personajes/administrativos/administrativo_02.png'), specialPermit:{...specialPermit('Gabriela Ramos','Acceso a archivo','21/07/2026','Rectorado','Retiro de auditoría','7393',true),issues:[{field:'date',message:'El permiso venció el día anterior.'}]} }
+  },
+  {
+    id: 'valerys-01', image: 'assets/personajes/estudiantes/valerys.png', gender: 'female', role: 'estudiante',
+    firstName: 'Valerys', lastName: 'Pereira', displayName: 'Valerys Pereira', age: 20,
+    careerOrDepartment: 'Artes Digitales', personality: 'encantadora, creativa y muy desordenada', recordId: '9091',
+    correctDecision: 'denied', hiddenError: 'El apellido declarado no coincide con el documento.',
+    greeting: '¡Hola! Es mi primer día. El documento está casi perfecto; una letra no cambia quién soy, ¿verdad?', reactions: reactions(),
+    responses: {
+      nombre: { text: 'Soy Valerys Pereira, con I antes de la R.', metadata: { evidenceType: 'statement', issueType: 'nameMismatch', isActualError: true } },
+      documentos: 'Traje mi identidad. La imprimieron con demasiada imaginación.',
+      default: 'Prometo que mañana voy a traer algo mucho más convincente.'
+    },
+    issueResponses: { surname: 'Mi apellido verdadero es Pereira. En el documento pusieron Pereyra.' }, requiredDocuments: ['identity'],
+    documents: { identity: { ...identity('Valerys','Pereyra','5.111.909-1','Uruguay','9091','assets/personajes/estudiantes/valerys.png'), issues: [{ field: 'surname', message: 'El apellido no coincide con la declaración de la titular.' }] } }
+  },
+  {
+    id: 'valerys-02', image: 'assets/personajes/estudiantes/valerys.png', gender: 'female', role: 'estudiante',
+    firstName: 'Valerys', lastName: 'Pereira', displayName: 'Valerys Pereira', age: 20,
+    careerOrDepartment: 'Artes Digitales', personality: 'optimista y persistentemente desordenada', recordId: '9091',
+    correctDecision: 'denied', hiddenError: 'La carta de admisión pertenece a Valeria Pereira.',
+    greeting: '¡Volví! Conseguí la carta. Dice Valeria, pero es un nombre muy parecido a Valerys.', reactions: reactions(),
+    responses: { nombre: 'Valerys Pereira. Valeria es otra persona... técnicamente.', carrera: 'Artes Digitales.', documentos: 'Identidad y carta de admisión, como pidió.', default: '¿Cuenta la intención administrativa?' },
+    issueResponses: { applicantName: 'La carta dice Valeria. Me la dieron en la ventanilla de al lado y ya estaba cerrando.' }, requiredDocuments: ['identity','admission'],
+    documents: {
+      identity: identity('Valerys','Pereira','5.111.909-1','Uruguay','9091','assets/personajes/estudiantes/valerys.png'),
+      admission: { ...admission('Valeria Pereira','Artes Digitales','Facultad de Diseño','19/07/2026','9091'), issues: [{ field: 'applicantName', message: 'El nombre no coincide con la identidad.' }] }
+    }
+  },
+  {
+    id: 'valerys-03', image: 'assets/personajes/estudiantes/valerys.png', gender: 'female', role: 'visitante',
+    firstName: 'Valerys', lastName: 'Pereira', displayName: 'Valerys Pereira', age: 20,
+    careerOrDepartment: 'Artes Digitales', personality: 'ingeniosa y confiada', recordId: '9091',
+    correctDecision: 'denied', hiddenError: 'El pase casero no tiene sello de Administración.',
+    greeting: 'Hoy vine como visitante. Diseñé yo misma el pase para ahorrarles trabajo.', reactions: reactions(),
+    responses: { nombre: 'Valerys Pereira, otra vez.', motivo: 'Visitar el taller de Artes Digitales.', documentos: 'Identidad y un pase hecho con muchísimo cariño.', default: 'El sello dibujado quedó bastante parecido, ¿no?' },
+    issueResponses: { stamp: 'No tiene sello oficial, pero le dibujé uno con regla y marcador.' }, requiredDocuments: ['identity','visitorPass'],
+    documents: {
+      identity: identity('Valerys','Pereira','5.111.909-1','Uruguay','9091','assets/personajes/estudiantes/valerys.png'),
+      visitorPass: { name:'VALERYS PEREIRA',visitReason:'VISITA AL TALLER',authorizedArea:'ARTES DIGITALES',date:'20/07/2026',time:'14:00',signature:'VALERYS',passCode:'VIS-9091',stamps:[],issues:[{field:'stamp',message:'Falta el sello obligatorio de Administración.'}] }
+    }
+  },
+  {
+    id: 'valerys-04', image: 'assets/personajes/estudiantes/valerys.png', gender: 'female', role: 'estudiante',
+    firstName: 'Valerys', lastName: 'Pereira', displayName: 'Valerys Pereira', age: 20,
+    careerOrDepartment: 'Artes Digitales', personality: 'persistente y simpática', recordId: '9091',
+    correctDecision: 'denied', hiddenError: 'El permiso fue autorizado por la propia estudiante.',
+    greeting: 'Esta vez traje un permiso especial. Lo autoricé personalmente porque conozco muy bien el caso.', reactions: reactions(),
+    responses: { nombre: 'Valerys Pereira.', motivo: 'Necesito entrar al taller fuera de horario.', documentos: 'Identidad y permiso especial.', default: 'Soy la máxima autoridad sobre mis propias urgencias.' },
+    issueResponses: { authorizingAuthority: 'Lo firmé yo. Nadie conoce mejor que yo lo importante que es terminar mi trabajo.' }, requiredDocuments: ['identity','specialPermit'],
+    documents: {
+      identity: identity('Valerys','Pereira','5.111.909-1','Uruguay','9091','assets/personajes/estudiantes/valerys.png'),
+      specialPermit: { ...specialPermit('Valerys Pereira','Taller nocturno','21/07/2026','Valerys Pereira','Entrega final','9091',true), issues:[{field:'authorizingAuthority',message:'La autoridad debe ser Rectorado, no la titular.'}] }
+    }
+  },
+  {
+    id: 'valerys-05', image: 'assets/personajes/estudiantes/valerys.png', gender: 'female', role: 'estudiante',
+    firstName: 'Valerys', lastName: 'Pereira', displayName: 'Valerys Pereira', age: 20,
+    careerOrDepartment: 'Artes Digitales', personality: 'orgullosa y agradecida', recordId: '9091',
+    correctDecision: 'approved', hiddenError: null,
+    greeting: 'Respire hondo: hoy todo está bien. Revisé cada letra, sello y número tres veces.', reactions: { ...reactions(), approvedCorrect: ['¡Al fin! Sabía que algún día iba a lograrlo. Gracias por no rendirse conmigo.', '¿Vio? Cinco días y ya soy casi una experta en burocracia.'] },
+    responses: { nombre:'Valerys Pereira, escrito correctamente.', carrera:'Artes Digitales.', documentos:'Identidad, constancia y certificado. Todo oficial.', default:'Puede revisar tranquila. Esta vez no dibujé ningún sello.' }, issueResponses:{}, requiredDocuments:['identity','enrollment','studyCertificate'],
+    documents:{
+      identity:identity('Valerys','Pereira','5.111.909-1','Uruguay','9091','assets/personajes/estudiantes/valerys.png'),
+      enrollment:enrollment('Valerys Pereira','Artes Digitales','2º semestre','22/07/2026','9091'),
+      studyCertificate:certificate('Valerys Pereira','Instituto de Artes','Promedio 8,9','21/07/2026','9091')
+    }
   }
 ];
 
