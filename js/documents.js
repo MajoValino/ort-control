@@ -63,12 +63,16 @@ function renderDocument(type, data, uid, index) {
 
   const card = document.createElement('div');
   card.className = `document-card ${config.cssClass}`;
-  const bg = document.createElement('img');
-  bg.className = 'document-background';
-  bg.src = config.image;
-  bg.alt = config.label;
-  bg.draggable = false;
-  card.appendChild(bg);
+  if (config.image) {
+    const bg = document.createElement('img');
+    bg.className = 'document-background';
+    bg.src = config.image;
+    bg.alt = config.label;
+    bg.draggable = false;
+    card.appendChild(bg);
+  } else {
+    card.classList.add('generated-document');
+  }
 
   for (const field of config.fields) {
     const value = data[field];
@@ -131,7 +135,7 @@ function renderInstitutionalStamps(card, type, stamps, issues, wrapper) {
     const marker = document.createElement('button');
     marker.type = 'button';
     marker.className = 'stamp-error-marker';
-    marker.textContent = 'ÁREA DE SELLO';
+    marker.textContent = '';
     marker.title = 'Clic para marcar el área vacía';
     marker.addEventListener('click', event => {
       event.stopPropagation();

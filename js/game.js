@@ -4,7 +4,7 @@ const gameState = {
   currentScreen: 'start', currentDay: 1, currentCharacterIndex: 0, score: 0,
   decisions: [], isPaused: false, dayCharacters: [], pendingAdvance: false,
   instructionsSeen: new Set(), conversationHistory: [], localResponseIndex: {},
-  receptionist: { strictness: 0, compassion: 0, errors: 0 }
+  receptionist: { strictness: 0, compassion: 0, errors: 0 }, transcript: []
 };
 
 const charAreaEl = document.getElementById('character-area');
@@ -35,10 +35,19 @@ const endingPreviewEl = document.getElementById('ending-preview');
 const btnNextDay = document.getElementById('btn-next-day');
 const evidenceListEl = document.getElementById('evidence-list');
 const rulebookOverlayEl = document.getElementById('rulebook-overlay');
-const rulebookRulesEl = document.getElementById('rulebook-rules');
+const rulebookRulesLeftEl = document.getElementById('rulebook-rules-left');
+const rulebookRulesRightEl = document.getElementById('rulebook-rules-right');
 const rulebookDayTitleEl = document.getElementById('rulebook-day-title');
 const decisionControlsEl = document.getElementById('decision-controls');
 const decisionToggleEl = document.getElementById('decision-drawer-toggle');
+const transcriptToggleEl = document.getElementById('transcript-toggle');
+const transcriptOverlayEl = document.getElementById('transcript-overlay');
+const btnCloseTranscriptEl = document.getElementById('btn-close-transcript');
+const transcriptContentEl = document.getElementById('transcript-content');
+const transcriptCharacterNameEl = document.getElementById('transcript-character-name');
+
+if (transcriptToggleEl) transcriptToggleEl.addEventListener('click', () => transcriptOverlayEl.classList.remove('hidden'));
+if (btnCloseTranscriptEl) btnCloseTranscriptEl.addEventListener('click', () => transcriptOverlayEl.classList.add('hidden'));
 
 function initGameSession() {
   gameState.currentDay = 1;
@@ -47,6 +56,9 @@ function initGameSession() {
   gameState.decisions = [];
   gameState.instructionsSeen.clear();
   gameState.receptionist = { strictness: 0, compassion: 0, errors: 0 };
+  CHARACTERS.forEach(character => {
+    if (character.documents) delete character.documents.missingDocumentRecord;
+  });
   loadDay(1);
 }
 function getDayData() { return DAYS.find(day => day.day === gameState.currentDay); }
@@ -60,11 +72,12 @@ function loadDay(dayNumber) {
   gameState.dayCharacters = day.characterIds.map(id => CHARACTERS.find(character => character.id === id)).filter(Boolean);
   bulletinDayNum.textContent = day.day;
   bulletinDateVal.textContent = day.date;
-  bulletinRule.textContent = day.newRule;
+  const bulletinRules = Array.isArray(day.newRule) ? day.newRule : [day.newRule];
+  bulletinRule.innerHTML = bulletinRules.map(rule => `<span>${rule}</span>`).join('');
   bulletinObs.innerHTML = day.observations.map(item => `<li>${item}</li>`).join('');
   bulletinReminders.innerHTML = day.reminder.map(item => `<li>${item}</li>`).join('');
   bulletinLore.textContent = day.lore;
-  bulletinNewDocs.innerHTML = `<strong>DOCUMENTOS NUEVOS:</strong><br>${day.introducedDocuments.map(type => DOCUMENT_LABELS[type]).join(' · ')}`;
+  bulletinNewDocs.innerHTML = day.introducedDocuments.map(type => `<span>${DOCUMENT_LABELS[type]}</span>`).join('');
   hudDayEl.textContent = `DÍA ${day.day}`;
   hudDateEl.textContent = day.date;
   document.querySelectorAll('.stamp-date').forEach(node => { node.textContent = day.date; });
@@ -97,11 +110,16 @@ function loadCharacter(index) {
   clearDocuments();
   chatHistoryEl.innerHTML = '';
   gameState.conversationHistory = [];
+  gameState.transcript = [];
+  if (transcriptContentEl) transcriptContentEl.innerHTML = '';
   gameState.localResponseIndex = {};
   setChatEnabled(false);
   const character = gameState.dayCharacters[index];
   if (!character) { showEndDaySummary(); return; }
   charAreaEl.innerHTML = '';
+  if (transcriptContentEl) transcriptContentEl.innerHTML = '';
+  if (transcriptCharacterNameEl) transcriptCharacterNameEl.textContent = character.displayName || 'Sujeto';
+  
   const image = new Image();
   image.className = 'character-img';
   image.alt = character.displayName;
@@ -109,10 +127,10 @@ function loadCharacter(index) {
   charAreaEl.appendChild(image);
   renderDocumentRequirements(character);
   refreshQuickQuestions();
+  if (character.documents) delete character.documents.missingDocumentRecord;
   const entries = Object.entries(character.documents).sort(([a], [b]) => a === 'identity' ? -1 : b === 'identity' ? 1 : 0);
   setTimeout(() => {
     addChatMessage(character.greeting, 'npc');
-    if (!character.documents.identity) addChatMessage('La persona no entregó identificación. Consulte el reglamento.', 'system');
     setChatEnabled(true);
   }, 250);
   setTimeout(() => entries.forEach(([type, data], documentIndex) => renderDocument(type, data, `${character.id}-${documentIndex}`, documentIndex)), 420);
@@ -152,13 +170,63 @@ function refreshQuickQuestions() {
   quickQuestionsEl.querySelectorAll('.quick-question').forEach(button => button.addEventListener('click', () => sendQuestion(button.textContent, { quick: true })));
 }
 
-function addChatMessage(text, who) {
+function addChatMessage(text, who, metadata = null) {
   const div = document.createElement('div');
   div.className = `chat-msg ${who === 'player' ? 'msg-player' : who === 'system' ? 'msg-system' : 'msg-npc'}`;
   const character = getCurrentCharacter();
   div.textContent = who === 'player' ? `> Tú: ${text}` : who === 'system' ? `> SISTEMA: ${text}` : `> ${character?.displayName || 'Persona'}: ${text}`;
   chatHistoryEl.appendChild(div);
   chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+
+  if (who !== 'system') {
+    gameState.transcript.push({
+      id: Date.now() + Math.random().toString(),
+      speaker: who === 'player' ? 'inspector' : 'character',
+      speakerLabel: who === 'player' ? 'Inspector' : (character?.displayName || 'Sujeto'),
+      text: text,
+      evidenceMetadata: metadata
+    });
+    renderTranscript();
+  }
+}
+
+function renderTranscript() {
+  const transcriptContent = document.getElementById('transcript-content');
+  if (!transcriptContent) return;
+  transcriptContent.innerHTML = '';
+  
+  gameState.transcript.forEach(entry => {
+    const line = document.createElement('div');
+    line.className = 'transcript-line';
+    
+    if (entry.evidenceMetadata) {
+      line.classList.add('selectable-transcript');
+      line.style.cursor = 'crosshair';
+      line.addEventListener('click', (e) => {
+        addEvidence({
+          source: 'transcript', element: line, ruleId: null, ruleType: null,
+          documentLabel: 'Transcripción', fieldLabel: 'Declaración',
+          value: entry.text, isActualError: entry.evidenceMetadata.isActualError,
+          issueMessage: '', metadata: entry.evidenceMetadata
+        });
+      });
+    } else if (entry.speaker === 'character') {
+      if (entry.text.length > 20) {
+        line.classList.add('selectable-transcript');
+        line.style.cursor = 'crosshair';
+        line.addEventListener('click', (e) => {
+          addEvidence({
+            source: 'transcript', element: line, ruleId: null, ruleType: null,
+            documentLabel: 'Transcripción', fieldLabel: 'Declaración',
+            value: entry.text, isActualError: false,
+            issueMessage: ''
+          });
+        });
+      }
+    }
+    line.textContent = `${entry.speakerLabel}: ${entry.text}`;
+    transcriptContent.appendChild(line);
+  });
 }
 function setChatEnabled(enabled) { chatInputEl.disabled = !enabled; chatSendEl.disabled = !enabled; }
 
@@ -180,6 +248,11 @@ function getLocalCharacterResponse(question, character) {
     return 'No estoy seguro de por qué le llama la atención. Es la información que me entregaron.';
   }
   const raw = character.responses[key] || character.responses.default || 'No tengo más información para agregar.';
+  
+  if (typeof raw === 'object' && raw.text) {
+    return raw;
+  }
+  
   const variants = Array.isArray(raw) ? raw : [raw, `${raw} Eso es todo lo que sé.`, `Hasta donde entiendo, ${raw.charAt(0).toLowerCase()}${raw.slice(1)}`];
   const index = gameState.localResponseIndex[key] || 0;
   gameState.localResponseIndex[key] = index + 1;
@@ -198,45 +271,131 @@ async function sendQuestion(question, options = {}) {
   addChatMessage(cleanQuestion, 'player');
   chatInputEl.value = '';
   setChatEnabled(false);
-  let response;
+  let responseText = '';
+  let responseMetadata = null;
+  
   try {
     if (shouldUseAI(cleanQuestion, options)) {
       showTurnNotification('CONSULTANDO...', 'warning-notif');
-      response = await askCharacterAI({
+      const aiResp = await askCharacterAI({
         question: cleanQuestion, character,
         selectedEvidence: getSelectedEvidence(),
         conversationHistory: gameState.conversationHistory
       });
+      responseText = aiResp;
     } else {
-      response = getLocalCharacterResponse(cleanQuestion, character);
+      const localResp = getLocalCharacterResponse(cleanQuestion, character);
+      if (typeof localResp === 'object') {
+        responseText = localResp.text;
+        responseMetadata = localResp.metadata;
+      } else {
+        responseText = localResp;
+      }
     }
   } catch (error) {
     console.warn('[IA] Se utilizó respuesta local:', error.message);
-    response = getLocalCharacterResponse(cleanQuestion, character);
+    const localResp = getLocalCharacterResponse(cleanQuestion, character);
+    if (typeof localResp === 'object') {
+      responseText = localResp.text;
+      responseMetadata = localResp.metadata;
+    } else {
+      responseText = localResp;
+    }
     if (error.message.includes('API key')) showTurnNotification('IA SIN CONFIGURAR — RESPUESTA LOCAL', 'warning-notif');
   }
   showTurnNotification('', '');
-  addChatMessage(response, 'npc');
-  gameState.conversationHistory.push({ role: 'Inspector', content: cleanQuestion }, { role: character.displayName, content: response });
+  addChatMessage(responseText, 'npc', responseMetadata);
+  gameState.conversationHistory.push({ role: 'Inspector', content: cleanQuestion }, { role: character.displayName, content: responseText });
   setChatEnabled(true);
 }
 
 function renderRulebook(day) {
-  rulebookDayTitleEl.textContent = `DÍA ${day.day} — REGLAS VIGENTES`;
-  const cumulativeDays = DAYS.filter(item => item.day <= day.day);
-  const rules = [];
-  cumulativeDays.forEach(item => {
-    rules.push({ id: `allowed-${item.day}`, label: item.newRule, type: 'general' });
-  });
-  rules.push({ id: 'identity-required', label: 'El documento de identidad es obligatorio para toda persona.', type: 'identity' });
-  rules.push({ id: 'codes-match', label: 'Los códigos pueden tener prefijos distintos, pero sus últimos 4 dígitos deben coincidir.', type: 'code' });
-  rulebookRulesEl.innerHTML = rules.map(rule => `<button type="button" class="rule-evidence" data-rule-id="${rule.id}" data-rule-type="${rule.type}">${rule.label}</button>`).join('');
-  rulebookRulesEl.querySelectorAll('.rule-evidence').forEach(button => button.addEventListener('click', () => {
+  rulebookDayTitleEl.textContent = `DÍA ${day.day}`;
+
+  const requirementsByDay = {
+    1: [
+      { id: 'access-day-1', type: 'category', label: 'INGRESO HABILITADO: estudiantes y docentes.' },
+      { id: 'identity-student', type: 'identity', label: 'ESTUDIANTE: documento de identidad.' },
+      { id: 'identity-teacher', type: 'identity', label: 'DOCENTE: documento de identidad.' }
+    ],
+    2: [
+      { id: 'access-day-2', type: 'category', label: 'INGRESO HABILITADO: estudiantes y docentes.' },
+      { id: 'new-student', type: 'identity', label: 'ASPIRANTE NUEVO: identidad + carta de admisión.' },
+      { id: 'regular-student', type: 'identity', label: 'ESTUDIANTE REGULAR: identidad + constancia de inscripción + certificado de estudios.' },
+      { id: 'teacher-day-2', type: 'identity', label: 'DOCENTE: documento de identidad.' }
+    ],
+    3: [
+      { id: 'access-day-3', type: 'category', label: 'INGRESO HABILITADO: estudiantes, docentes, visitantes y proveedores.' },
+      { id: 'new-student-day-3', type: 'identity', label: 'ASPIRANTE NUEVO: identidad + carta de admisión.' },
+      { id: 'regular-student-day-3', type: 'identity', label: 'ESTUDIANTE REGULAR: identidad + constancia de inscripción + certificado de estudios.' },
+      { id: 'teacher-day-3', type: 'identity', label: 'DOCENTE: documento de identidad.' },
+      { id: 'visitor-day-3', type: 'identity', label: 'VISITANTE: identidad + pase de visitante.' },
+      { id: 'provider-day-3', type: 'identity', label: 'PROVEEDOR: identidad + orden de servicio.' }
+    ]
+  };
+
+  const validations = [
+    { id: 'val-identity', type: 'identity', label: 'IDENTIDAD: nombre y apellido deben coincidir con los demás documentos.' },
+    { id: 'val-codes', type: 'code', label: 'CÓDIGOS: compare los 4 dígitos finales; los prefijos pueden ser distintos.' }
+  ];
+  if (day.day >= 2) {
+    validations.push(
+      { id: 'val-academic', type: 'academic', label: 'DOCUMENTOS ACADÉMICOS: carrera y período deben coincidir.' },
+      { id: 'val-enrollment-stamp', type: 'stamp', label: 'CONSTANCIA: requiere sello de Admisiones.' },
+      { id: 'val-certificate-stamp', type: 'stamp', label: 'CERTIFICADO: requiere sello de Facultad.' }
+    );
+  }
+  if (day.day >= 3) {
+    validations.push(
+      { id: 'val-visitor', type: 'external', label: 'PASE DE VISITANTE: área, motivo, fecha y sello de Administración.' },
+      { id: 'val-provider', type: 'external', label: 'ORDEN DE SERVICIO: empresa, área, motivo, fecha y sello de Administración.' }
+    );
+  }
+
+  const renderRules = rules => rules.map(rule =>
+    `<button type="button" class="rule-evidence" data-rule-id="${rule.id}" data-rule-type="${rule.type}">${rule.label}</button>`
+  ).join('');
+
+  if (rulebookRulesLeftEl) rulebookRulesLeftEl.innerHTML = renderRules(requirementsByDay[day.day] || requirementsByDay[1]);
+  if (rulebookRulesRightEl) rulebookRulesRightEl.innerHTML = renderRules(validations);
+
+  document.querySelectorAll('#rulebook-overlay .rule-evidence').forEach(button => button.addEventListener('click', () => {
     addEvidence({ source: 'rule', element: button, ruleId: button.dataset.ruleId, ruleType: button.dataset.ruleType, documentLabel: 'Reglamento', fieldLabel: 'Regla', value: button.textContent, isActualError: false });
   }));
 }
 function openRulebook() { rulebookOverlayEl.classList.remove('hidden'); }
 function closeRulebook() { rulebookOverlayEl.classList.add('hidden'); }
+function generateMissingDocumentRecord(character) {
+  if (document.querySelector('.missing-document-record')) return null; // Prevent duplicate
+
+  const dateStr = getDayData().date;
+  const missingData = {
+    name: character.displayName,
+    documentType: 'Documento de identidad',
+    statement: 'No presentó el documento.',
+    date: dateStr,
+    status: 'Pendiente de resolución'
+  };
+  if (!character.documents) character.documents = {};
+  delete character.documents.missingDocumentRecord;
+  const wrapper = renderDocument('missingDocumentRecord', missingData, character.id + '-missing', Object.keys(character.documents).length);
+
+  if (!wrapper) {
+    console.error('[ACTA] No se pudo renderizar el acta.');
+    showTurnNotification('ERROR AL GENERAR EL ACTA', 'denied-notif');
+    return null;
+  }
+
+  wrapper.classList.add('generated-missing-document-record', 'in-tray');
+  wrapper.dataset.state = 'tray';
+  wrapper.style.left = '260px';
+  wrapper.style.top = '690px';
+  wrapper.dataset.initialLeft = '260';
+  wrapper.dataset.initialTop = '690';
+  selectDocument(wrapper);
+  return wrapper;
+}
+
 function updateEvidencePanel() {
   const evidence = getSelectedEvidence();
   evidenceListEl.innerHTML = evidence.length ? evidence.map((item, index) => `<div>${index + 1}. <strong>${item.documentLabel}</strong><br>${item.fieldLabel}: ${item.value}</div>`).join('') : 'Seleccione hasta 2 datos.';
@@ -253,6 +412,19 @@ function compareEvidence() {
   if (a.source === 'rule' || b.source === 'rule') {
     const rule = a.source === 'rule' ? a : b;
     const field = a.source === 'rule' ? b : a;
+    
+    // TRANSCRIPT MISSING DOCUMENT COMPARISON
+    if (rule.ruleType === 'identity' && field.source === 'transcript' && field.metadata) {
+      if (field.metadata.issueType === 'missingDocument' && field.metadata.missingDocumentType === 'identity') {
+        clearSelectedEvidence();
+        if (rulebookOverlayEl) rulebookOverlayEl.classList.add('hidden');
+        if (transcriptOverlayEl) transcriptOverlayEl.classList.add('hidden');
+        generateMissingDocumentRecord(getCurrentCharacter());
+        showTurnNotification('ACTA GENERADA — ARRASTRE Y SELLE LA RESOLUCIÓN', 'warning-notif');
+        return;
+      }
+    }
+
     if (rule.ruleType === 'identity') {
       discrepancy = field.field === 'missingIdentity' || field.value === 'AUSENTE';
       message = discrepancy ? 'DISCREPANCIA: falta la identidad obligatoria.' : 'La evidencia no contradice esta regla.';

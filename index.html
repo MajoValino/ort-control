@@ -56,7 +56,14 @@
         <p id="bulletin-rule"></p>
         <ul id="bulletin-obs"></ul>
         <ul id="bulletin-reminders"></ul>
-        <div id="bulletin-example"><p id="bulletin-lore"></p><div id="bulletin-new-docs"></div></div>
+        <div id="bulletin-example">
+          <h3>COMUNICADO INTERNO</h3>
+          <p id="bulletin-lore"></p>
+          <div id="bulletin-new-docs-container">
+            <h3>DOCUMENTOS INCORPORADOS HOY</h3>
+            <div id="bulletin-new-docs"></div>
+          </div>
+        </div>
       </div>
 
       <button class="action-btn" id="btn-start-day">COMENZAR JORNADA ▶</button>
@@ -94,6 +101,21 @@
         <div id="quick-questions" aria-label="Preguntas rápidas"></div>
       </div>
 
+      <!-- ─── TRANSCRIPT (Papel blanco en escritorio izquierdo) ─── -->
+      <button id="transcript-toggle" type="button" aria-label="Abrir transcripción" title="Registro de conversación"></button>
+      
+      <div id="transcript-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Transcripción de la conversación">
+        <div class="transcript-paper">
+          <header>
+            <h2>TRANSCRIPCIÓN</h2>
+            <button id="btn-close-transcript" type="button">X</button>
+          </header>
+          <p id="transcript-character-name">Nombre del sujeto</p>
+          <div id="transcript-content"></div>
+          <p class="transcript-help">Seleccione una línea para usarla como evidencia.</p>
+        </div>
+      </div>
+
       <!-- ─── BANDEJA DE DOCUMENTOS ─── -->
       <div id="document-tray" aria-label="Bandeja de documentos"></div>
 
@@ -113,14 +135,47 @@
       <!-- Cuaderno rojo de reglas -->
       <button id="rulebook-toggle" type="button" aria-label="Abrir cuaderno de reglas" title="Cuaderno de reglas"></button>
       <div id="rulebook-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Cuaderno de reglas">
-        <div class="rulebook-paper">
-          <header>
-            <h2>REGLAMENTO DE ADMISIÓN</h2>
-            <button id="btn-close-rulebook" type="button">X</button>
-          </header>
-          <p id="rulebook-day-title"></p>
-          <div id="rulebook-rules"></div>
-          <p class="rulebook-help">Seleccione una regla y un dato de un documento, o dos datos, y pulse COMPARAR.</p>
+        <div class="rulebook-book">
+          <button id="btn-close-rulebook" type="button">X</button>
+          
+          <div class="rulebook-pages-container">
+            <!-- Página Izquierda -->
+            <div class="rulebook-page rulebook-left-page">
+              <header>
+                <h2>REGLAMENTO DE ADMISIÓN</h2>
+              </header>
+              <p id="rulebook-day-title"></p>
+              <h3>REQUISITOS POR CATEGORÍA</h3>
+              <div id="rulebook-rules-left"></div>
+              <span class="rulebook-page-number">1</span>
+            </div>
+            
+            <!-- Separador visual -->
+            <div class="rulebook-binding"></div>
+
+            <!-- Página Derecha -->
+            <div class="rulebook-page rulebook-right-page">
+              <h3>VALIDACIONES Y SELLOS</h3>
+              <div id="rulebook-rules-right"></div>
+              
+              <div class="rulebook-explanation">
+                <p>Los prefijos cambian según el documento. Compare únicamente los cuatro números finales.</p>
+                <div class="rulebook-examples">
+                <div><em>ID:</em> 4.692.104-3 ➔ Exp: 1190</div>
+                <div><em>Admisión:</em> ADM-2026-1190</div>
+                <div><em>RESULTADO: COINCIDEN. TODOS IDENTIFICAN EL EXPEDIENTE 1190.</em></div>
+              </div>
+              </div>
+              <p class="rulebook-help">Seleccione una regla y un dato, o dos datos, y pulse COMPARAR.</p>
+              <span class="rulebook-page-number">2</span>
+            </div>
+            
+            <!-- Tabs laterales -->
+            <div class="rulebook-tabs">
+          <button type="button" class="rulebook-tab">REQ.</button>
+          <button type="button" class="rulebook-tab">VALID.</button>
+        </div>
+          </div>
         </div>
       </div>
 

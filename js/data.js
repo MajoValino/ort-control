@@ -5,24 +5,25 @@ const DAYS = [
     day: 1,
     date: '18/07/2026',
     lore: 'Tras varios ingresos irregulares, Rectorado limita el acceso de hoy a estudiantes y docentes. Toda persona deberá acreditar su identidad antes de pasar.',
-    newRule: 'Solo pueden ingresar ESTUDIANTES y DOCENTES. El documento de identidad es obligatorio. Para estudiantes nuevos, el nombre de la carta debe coincidir con la identidad.',
+    newRule: ['1. Solo pueden ingresar ESTUDIANTES y DOCENTES.', '2. Toda persona debe presentar documento de identidad.'],
     observations: [
       'Revise primero la categoría de la persona.',
-      'Exija documento de identidad en todos los casos.',
-      'Compare nombre y apellido cuando exista carta de admisión.'
+      'Exija documento de identidad en todos los casos.'
     ],
     reminder: [
-      'Los últimos 4 dígitos identifican el expediente.',
+      'Cualquier otro documento no es requerido hoy.',
       'Seleccione dos datos o una regla y un dato para compararlos.'
     ],
-    introducedDocuments: ['identity', 'admission'],
+    introducedDocuments: ['identity'],
     allowedRoles: ['estudiante', 'docente'],
     instructionSteps: [
-      'Compruebe que la persona sea estudiante o docente.',
-      'Verifique que haya presentado documento de identidad.',
-      'Si hay carta de admisión, compare el nombre completo y los 4 dígitos del expediente.',
-      'Abra el cuaderno rojo para consultar las reglas. Seleccione dos evidencias y pulse COMPARAR.',
-      'Abra la bandeja de sellos, seleccione un documento y decida APROBAR o DENEGAR.'
+      'Quiénes pueden ingresar: Solo estudiantes y docentes.',
+      'Documentos: Estudiantes y docentes solo necesitan su documento de identidad.',
+      'Campos a comparar: Asegúrese de que los datos personales coincidan.',
+      'Sellos obligatorios: No se requieren sellos adicionales hoy.',
+      'Cómo seleccionar evidencia: Haga clic en un dato del documento y luego en otro para compararlos.',
+      'Cuaderno de reglas: Abra el cuaderno rojo inferior para revisar reglas y usarlas como evidencia.',
+      'Sellar: Abra la bandeja de sellos abajo a la derecha y aplique APROBADO o DENEGADO.'
     ],
     receptionistLore: 'Primer día en Admisiones. El flujo fue tranquilo, pero Rectorado dejó claro que cada omisión quedará registrada en su legajo.',
     characterIds: ['student-01', 'student-03', 'teacher-01', 'student-04']
@@ -30,24 +31,25 @@ const DAYS = [
   {
     day: 2,
     date: '19/07/2026',
-    lore: 'Una constancia falsa circuló por los grupos estudiantiles. Desde hoy se exige verificar el trayecto académico y el código común del expediente.',
-    newRule: 'Se mantienen las reglas del Día 1. Se incorporan CERTIFICADO DE ESTUDIOS y CONSTANCIA DE INSCRIPCIÓN. Carrera, nombre y últimos 4 dígitos deben coincidir.',
+    lore: 'Una constancia falsa circuló por los grupos estudiantiles. Rectorado ahora distingue aspirantes nuevos de estudiantes regulares.',
+    newRule: ['Reglas del Día 1 activas. Aspirante nuevo: identidad y carta de admisión. Estudiante regular: identidad, constancia y certificado de estudios. Docente: solo identidad.'],
     observations: [
       'El código puede tener prefijos distintos, pero debe terminar igual.',
       'Compruebe carrera y período académico.',
       'Revise el sello de la facultad o de Admisiones.'
     ],
     reminder: [
-      'No todos presentan los cuatro documentos.',
+      'Un estudiante regular con identidad y constancia pero sin certificado debe ser denegado.',
       'Solo exija los documentos indicados por el caso y las reglas del día.'
     ],
     introducedDocuments: ['studyCertificate', 'enrollment'],
     allowedRoles: ['estudiante', 'docente'],
     instructionSteps: [
       'Aplique todas las reglas del Día 1.',
-      'Cuando haya certificado o constancia, compare nombre, carrera y período.',
+      'Identifique si es aspirante nuevo o estudiante regular.',
+      'Aspirante nuevo requiere carta de admisión.',
+      'Estudiante regular requiere constancia de inscripción y certificado de estudios.',
       'Los códigos ORT-, ADM-, ACA- e INS- deben compartir los mismos 4 dígitos finales.',
-      'Un sello ausente o de otra dependencia invalida el documento.',
       'Use el cuaderno para comparar evidencias antes de decidir.'
     ],
     receptionistLore: 'El rumor sobre documentos alterados aumentó la tensión. Algunos aspirantes culpan al sistema; otros parecen conocer demasiado bien sus fallas.',
@@ -57,7 +59,7 @@ const DAYS = [
     day: 3,
     date: '20/07/2026',
     lore: 'Un proveedor accedió ayer a un área restringida con un pase equivocado. Seguridad delega en Admisiones la revisión de visitantes y servicios externos.',
-    newRule: 'VISITANTES y PROVEEDORES pueden ingresar solo con identidad y el permiso correspondiente. El área, la fecha, el motivo y los 4 dígitos deben coincidir.',
+    newRule: ['Ingresan VISITANTES autorizados con Identidad y Pase.', 'Ingresan PROVEEDORES con Identidad y Orden de Servicio.', 'El área, la fecha, el motivo y los 4 dígitos deben coincidir.'],
     observations: [
       'Visitante: Pase de visitante.',
       'Proveedor: Orden de servicio.',
@@ -112,9 +114,9 @@ function certificate(fullName, institution, status, date, recordId, valid = true
     issues: valid ? [] : [{ field: 'stamp', message: 'Falta el sello de Facultad.' }]
   };
 }
-function enrollment(fullName, studentNumber, career, semester, date, recordId, valid = true) {
+function enrollment(fullName, career, semester, date, recordId, valid = true) {
   return {
-    name: fullName.toUpperCase(), studentNumber, career: career.toUpperCase(), semester: semester.toUpperCase(),
+    name: fullName.toUpperCase(), studentNumber: `EST-${recordId}`, career: career.toUpperCase(), semester: semester.toUpperCase(),
     category: 'REGULAR', issueDate: date, code: `INS-26-${recordId}`,
     stamps: valid ? [{ type: 'admissions', valid: true }] : [], issues: []
   };
@@ -127,11 +129,10 @@ const CHARACTERS = [
     careerOrDepartment: 'Diseño Gráfico', personality: 'nervioso y respetuoso', recordId: '2814',
     correctDecision: 'approved', hiddenError: null,
     greeting: 'Buenos días... vine a entregar mis documentos para la inscripción.', reactions: reactions(),
-    responses: { nombre: 'Mi nombre es Lucas Pereira.', carrera: 'Me inscribí en Diseño Gráfico.', documentos: 'Entregué mi identidad y la carta de admisión.', default: 'Puede revisar los documentos.' },
-    issueResponses: {}, requiredDocuments: ['identity', 'admission'],
+    responses: { nombre: 'Mi nombre es Lucas Pereira.', carrera: 'Me inscribí en Diseño Gráfico.', documentos: 'Entregué mi identidad.', default: 'Puede revisar los documentos.' },
+    issueResponses: {}, requiredDocuments: ['identity'],
     documents: {
-      identity: identity('Lucas', 'Pereira', '4.859.214-7', 'Tacuarembó', '2814', 'assets/personajes/estudiantes/estudiante_01.png'),
-      admission: admission('Lucas Pereira', 'Diseño Gráfico', 'Facultad de Diseño', '18/07/2026', '2814')
+      identity: identity('Lucas', 'Pereira', '4.859.214-7', 'Tacuarembó', '2814', 'assets/personajes/estudiantes/estudiante_01.png')
     }
   },
   {
@@ -140,11 +141,10 @@ const CHARACTERS = [
     careerOrDepartment: 'Comunicación', personality: 'amable y segura', recordId: '1874',
     correctDecision: 'approved', hiddenError: null,
     greeting: 'Buen día. Vengo a completar mi ingreso a Comunicación.', reactions: reactions(),
-    responses: { nombre: 'Soy Valentina Silva.', carrera: 'Comunicación.', documentos: 'Presenté identidad y carta de admisión.', default: 'Claro, pregunte lo que necesite.' },
-    issueResponses: {}, requiredDocuments: ['identity', 'admission'],
+    responses: { nombre: 'Soy Valentina Silva.', carrera: 'Comunicación.', documentos: 'Presenté identidad.', default: 'Claro, pregunte lo que necesite.' },
+    issueResponses: {}, requiredDocuments: ['identity'],
     documents: {
-      identity: identity('Valentina', 'Silva', '5.024.115-1', 'Canelones', '1874', 'assets/personajes/estudiantes/estudiante_03.png'),
-      admission: admission('Valentina Silva', 'Comunicación', 'Facultad de Comunicación', '18/07/2026', '1874')
+      identity: identity('Valentina', 'Silva', '5.024.115-1', 'Canelones', '1874', 'assets/personajes/estudiantes/estudiante_03.png')
     }
   },
   {
@@ -163,44 +163,52 @@ const CHARACTERS = [
     id: 'student-04', image: 'assets/personajes/estudiantes/estudiante_04.png', gender: 'male', role: 'estudiante',
     firstName: 'Mateo', lastName: 'Ramos', displayName: 'Mateo Ramos', age: 18,
     careerOrDepartment: 'Arquitectura', personality: 'apurado', recordId: '8402',
-    correctDecision: 'denied', hiddenError: 'La carta no tiene sello de Admisiones.',
-    greeting: 'Hola, estoy un poco apurado. Esta es mi documentación.', reactions: reactions(),
-    responses: { nombre: 'Mateo Ramos.', carrera: 'Arquitectura.', documentos: 'Es todo lo que me entregaron.', default: 'No sé si falta algo.' },
-    issueResponses: { stamp: 'No me había dado cuenta de que faltaba el sello.' }, requiredDocuments: ['identity', 'admission'],
-    documents: {
-      identity: identity('Mateo', 'Ramos', '5.201.884-0', 'Maldonado', '8402', 'assets/personajes/estudiantes/estudiante_04.png'),
-      admission: admission('Mateo Ramos', 'Arquitectura', 'Facultad de Arquitectura', '18/07/2026', '8402', false)
-    }
+    correctDecision: 'denied', hiddenError: 'Falta documento de identidad.',
+    greeting: 'Hola, estoy un poco apurado.', reactions: reactions(),
+    responses: { 
+      nombre: 'Mateo Ramos.', 
+      carrera: 'Arquitectura.', 
+      documentos: 'Ay, me olvidé mi documento.', 
+      identidad: {
+        text: 'Olvidé mi documento de identidad.',
+        metadata: {
+          evidenceType: 'statement',
+          issueType: 'missingDocument',
+          missingDocumentType: 'identity',
+          isActualError: true
+        }
+      },
+      default: 'No sé si falta algo.' 
+    },
+    issueResponses: {},
+    requiredDocuments: ['identity'],
+    documents: {}
   },
   {
     id: 'student-02', image: 'assets/personajes/estudiantes/estudiante_02.png', gender: 'female', role: 'estudiante',
     firstName: 'Sofía', lastName: 'Acosta', displayName: 'Sofía Acosta', age: 21,
     careerOrDepartment: 'Diseño Digital', personality: 'serena y reservada', recordId: '1190',
     correctDecision: 'approved', hiddenError: null,
-    greeting: 'Buenos días. Traje la documentación del segundo semestre.', reactions: reactions(),
-    responses: { nombre: 'Sofía Acosta.', carrera: 'Diseño Digital.', documentos: 'Identidad, carta y constancia.', default: 'Puede revisar todo.' },
-    issueResponses: {}, requiredDocuments: ['identity', 'admission', 'enrollment'],
+    greeting: 'Buenos días. Traje la documentación de ingreso.', reactions: reactions(),
+    responses: { nombre: 'Sofía Acosta.', carrera: 'Diseño Digital.', documentos: 'Identidad y carta de admisión.', default: 'Soy aspirante nueva.' },
+    issueResponses: {}, requiredDocuments: ['identity', 'admission'],
     documents: {
       identity: identity('Sofía', 'Acosta', '4.692.104-3', 'Montevideo', '1190', 'assets/personajes/estudiantes/estudiante_02.png'),
-      admission: admission('Sofía Acosta', 'Diseño Digital', 'Facultad de Diseño', '19/07/2026', '1190'),
-      enrollment: enrollment('Sofía Acosta', 'EST-1190', 'Diseño Digital', '2º semestre', '19/07/2026', '1190')
+      admission: admission('Sofía Acosta', 'Diseño Digital', 'Facultad de Diseño', '19/07/2026', '1190')
     }
   },
   {
     id: 'student-05', image: 'assets/personajes/estudiantes/estudiante_05.png', gender: 'female', role: 'estudiante',
     firstName: 'Camila', lastName: 'Méndez', displayName: 'Camila Méndez', age: 22,
     careerOrDepartment: 'Psicología', personality: 'confiada', recordId: '5539',
-    correctDecision: 'denied', hiddenError: 'El apellido del certificado no coincide con la identidad.',
-    greeting: 'Hola. Vengo a solicitar la reválida de estudios.', reactions: reactions(),
-    responses: { nombre: 'Camila Méndez.', carrera: 'Psicología.', documentos: 'Identidad, carta y certificado.', default: 'Los documentos los emitieron distintas oficinas.' },
-    issueResponses: { applicantName: 'Mi apellido es Méndez, con z. El otro debe ser un error de la institución.' }, requiredDocuments: ['identity', 'admission', 'studyCertificate'],
+    correctDecision: 'approved', hiddenError: null,
+    greeting: 'Hola. Vengo a confirmar mi calidad de estudiante regular.', reactions: reactions(),
+    responses: { nombre: 'Camila Méndez.', carrera: 'Psicología.', documentos: 'Identidad, constancia y certificado.', default: 'Los documentos están en regla.' },
+    issueResponses: {}, requiredDocuments: ['identity', 'enrollment', 'studyCertificate'],
     documents: {
       identity: identity('Camila', 'Méndez', '4.123.987-2', 'Montevideo', '5539', 'assets/personajes/estudiantes/estudiante_05.png'),
-      admission: admission('Camila Méndez', 'Psicología', 'Facultad de Psicología', '19/07/2026', '5539'),
-      studyCertificate: {
-        ...certificate('Camila Mendes', 'Liceo Nº 5', 'Promedio 8,2', '12/07/2026', '5539'),
-        issues: [{ field: 'applicantName', message: 'El apellido no coincide con la identidad.' }]
-      }
+      enrollment: enrollment('Camila Méndez', 'Psicología', '2º semestre', '19/07/2026', '5539'),
+      studyCertificate: certificate('Camila Méndez', 'Universidad Central', 'Promedio 8,2', '12/07/2026', '5539')
     }
   },
   {
@@ -208,29 +216,29 @@ const CHARACTERS = [
     firstName: 'Bruno', lastName: 'Costa', displayName: 'Bruno Costa', age: 23,
     careerOrDepartment: 'Analítica de Datos', personality: 'evasivo', recordId: '1985',
     correctDecision: 'denied', hiddenError: 'La constancia tiene un código de expediente diferente.',
-    greeting: 'Hola. Necesito confirmar mi inscripción.', reactions: reactions(),
-    responses: { nombre: 'Bruno Costa.', carrera: 'Analítica de Datos.', documentos: 'Identidad, carta y constancia.', default: 'Los descargué del sistema.' },
-    issueResponses: { code: 'Mi expediente termina en 1985. Si ve otro número, debe ser un error del sistema.' }, requiredDocuments: ['identity', 'admission', 'enrollment'],
+    greeting: 'Hola. Necesito confirmar mi inscripción de regular.', reactions: reactions(),
+    responses: { nombre: 'Bruno Costa.', carrera: 'Analítica de Datos.', documentos: 'Identidad, constancia y certificado.', default: 'Los descargué del sistema.' },
+    issueResponses: { code: 'Mi expediente termina en 1985. Si ve otro número, debe ser un error del sistema.' }, requiredDocuments: ['identity', 'enrollment', 'studyCertificate'],
     documents: {
       identity: identity('Bruno', 'Costa', '4.086.710-8', 'Uruguay', '1985', 'assets/personajes/estudiantes/estudiante_06.png'),
-      admission: admission('Bruno Costa', 'Analítica de Datos', 'Facultad de Ingeniería', '19/07/2026', '1985'),
       enrollment: {
-        ...enrollment('Bruno Costa', 'EST-1985', 'Analítica de Datos', '2º semestre', '19/07/2026', '9288'),
-        code: 'INS-26-9288', issues: [{ field: 'code', message: 'Los 4 dígitos finales no coinciden con identidad y carta.' }]
-      }
+        ...enrollment('Bruno Costa', 'Analítica de Datos', '2º semestre', '19/07/2026', '1985'),
+        code: 'INS-26-9288', issues: [{ field: 'code', message: 'Los 4 dígitos finales no coinciden con identidad.' }]
+      },
+      studyCertificate: certificate('Bruno Costa', 'Instituto Tecnológico', 'Promedio 7,5', '18/07/2026', '1985')
     }
   },
   {
     id: 'student-09', image: 'assets/personajes/estudiantes/estudiante_09.png', gender: 'female', role: 'estudiante',
     firstName: 'Julieta', lastName: 'López', displayName: 'Julieta López', age: 20,
     careerOrDepartment: 'Gestión Académica', personality: 'formal', recordId: '2022',
-    correctDecision: 'denied', hiddenError: 'La constancia no tiene sello institucional.',
-    greeting: 'Buen día. Traigo una constancia para validar mi inscripción.', reactions: reactions(),
-    responses: { nombre: 'Julieta López.', documentos: 'Identidad y constancia de inscripción.', default: 'La descargué esta mañana.' },
-    issueResponses: { stamp: 'No noté que el sello no aparecía en la descarga.' }, requiredDocuments: ['identity', 'enrollment'],
+    correctDecision: 'denied', hiddenError: 'Falta certificado de estudios.',
+    greeting: 'Buen día. Traigo mi constancia de estudiante regular.', reactions: reactions(),
+    responses: { nombre: 'Julieta López.', documentos: 'Identidad y constancia de inscripción.', default: 'Pensé que con la constancia era suficiente.' },
+    issueResponses: { studyCertificate: 'No traje el certificado, nadie me avisó.' }, requiredDocuments: ['identity', 'enrollment', 'studyCertificate'],
     documents: {
       identity: identity('Julieta', 'López', '4.104.052-9', 'Uruguay', '2022', 'assets/personajes/estudiantes/estudiante_09.png'),
-      enrollment: { ...enrollment('Julieta López', 'EST-2022', 'Gestión Académica', '2º semestre', '19/07/2026', '2022', false), issues: [{ field: 'stamp', message: 'Falta el sello de Admisiones.' }] }
+      enrollment: enrollment('Julieta López', 'Gestión Académica', '2º semestre', '19/07/2026', '2022')
     }
   },
   {
@@ -294,7 +302,8 @@ const DOCUMENT_TYPES = {
   enrollment: { label: 'Constancia de inscripción', image: 'assets/documentos/constancia-inscripcion.png', cssClass: 'enrollment-document', fields: ['name', 'studentNumber', 'career', 'semester', 'category', 'issueDate', 'code'] },
   visitorPass: { label: 'Pase de visitante', image: 'assets/documentos/pase-visitante.png', cssClass: 'visitor-pass-document', fields: ['name', 'visitReason', 'authorizedArea', 'date', 'time', 'passCode', 'signature'] },
   serviceOrder: { label: 'Orden de servicio', image: 'assets/documentos/orden-servicio.png', cssClass: 'service-order-document', fields: ['name', 'companyService', 'reason', 'authorizedArea', 'date', 'signature', 'approval', 'orderCode'] },
-  specialPermit: { label: 'Permiso especial', image: 'assets/documentos/permiso-especial.png', cssClass: 'special-permit-document', fields: ['name', 'exceptionType', 'date', 'authorizingAuthority', 'observations', 'authorizationCode', 'signature'] }
+  specialPermit: { label: 'Permiso especial', image: 'assets/documentos/permiso-especial.png', cssClass: 'special-permit-document', fields: ['name', 'exceptionType', 'date', 'authorizingAuthority', 'observations', 'authorizationCode', 'signature'] },
+  missingDocumentRecord: { label: 'Acta de Documentación Faltante', cssClass: 'missing-document-record', fields: ['name', 'documentType', 'statement', 'date', 'status'] }
 };
 
 const FIELD_LABELS = {
@@ -305,7 +314,9 @@ const FIELD_LABELS = {
   semester: 'Período', category: 'Categoría', code: 'Código de constancia', visitReason: 'Motivo',
   authorizedArea: 'Área autorizada', date: 'Fecha', time: 'Hora', passCode: 'Código de pase',
   companyService: 'Empresa o servicio', reason: 'Motivo', approval: 'Aprobación', orderCode: 'Código de orden',
-  stamp: 'Sello institucional'
+  stamp: 'Sello institucional', exceptionType: 'Excepción', authorizingAuthority: 'Autoridad', 
+  observations: 'Observaciones', authorizationCode: 'Código autorización', documentType: 'Documento faltante', 
+  statement: 'Declaración', status: 'Estado'
 };
 
 const DOCUMENT_LABELS = Object.fromEntries(Object.entries(DOCUMENT_TYPES).map(([key, value]) => [key, value.label]));

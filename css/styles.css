@@ -971,9 +971,9 @@ h1, h2, h3, p, span, button, input, li, div {
   bottom: 7%;
   width: 31%;
   height: 16%;
-  border: 3px dashed rgba(120,30,30,.65);
-  background: rgba(255,255,255,.08);
-  color: rgba(80,30,30,.75);
+  border: none;
+  background: transparent;
+  color: transparent;
   font: 15px 'VT323', monospace;
   cursor: crosshair;
 }
@@ -1208,3 +1208,577 @@ h1, h2, h3, p, span, button, input, li, div {
 }
 .requirement-row.missing { cursor: crosshair; }
 .requirement-row.selected-error-field { outline: 3px dashed #d63838; outline-offset: 2px; }
+
+/* REVISION 5 — REGLAMENTO Y PROGRESION */
+
+/* Contenedor del libro (la tapa) */
+.rulebook-book {
+  position: relative;
+  width: 960px;
+  max-width: 90vw;
+  height: 600px;
+  background-color: #632a2a; /* Tapa roja oscura/marrón */
+  border: 6px solid #291515;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botón de cierre posicionado en la tapa */
+.rulebook-book #btn-close-rulebook {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #291515;
+  color: #e4e1bd;
+  border: 2px solid #000;
+  padding: 5px 12px;
+  font: 24px 'VT323', monospace;
+  cursor: pointer;
+  z-index: 200;
+}
+.rulebook-book #btn-close-rulebook:hover {
+  background: #4a2525;
+}
+
+/* Contenedor de las dos páginas */
+.rulebook-pages-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #291515; /* Fondo detrás de las hojas */
+  border: 4px solid #000;
+}
+
+/* Estilo general de cada página (papel envejecido cálido) */
+.rulebook-page {
+  flex: 1;
+  background-color: #d7c9a6; /* Papel cálido */
+  color: #2b2520;
+  padding: 30px 40px;
+  overflow-y: auto;
+  position: relative;
+  border-top: 2px solid #e8dec3;
+  border-bottom: 2px solid #a89a74;
+}
+.rulebook-page::-webkit-scrollbar { width: 8px; }
+.rulebook-page::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.rulebook-page::-webkit-scrollbar-thumb { background: #5c4f3d; }
+
+/* Página izquierda y derecha con pequeños detalles de sombra para dar volumen */
+.rulebook-left-page {
+  border-left: 2px solid #e8dec3;
+  box-shadow: inset -5px 0 10px rgba(0,0,0,0.1);
+}
+.rulebook-right-page {
+  border-right: 2px solid #a89a74;
+  box-shadow: inset 5px 0 10px rgba(0,0,0,0.1);
+}
+
+/* Encuadernación central */
+.rulebook-binding {
+  width: 32px;
+  background: linear-gradient(to right, #6b5c43 0%, #4a3f2d 20%, #2b251a 50%, #4a3f2d 80%, #6b5c43 100%);
+  border-left: 2px solid #2b251a;
+  border-right: 2px solid #2b251a;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  z-index: 5;
+}
+
+/* Tipografía de las páginas */
+.rulebook-page header {
+  border-bottom: 3px double #5c4f3d;
+  margin-bottom: 12px;
+  padding-bottom: 4px;
+}
+.rulebook-page h2 { margin: 0; font-size: 32px; color: #2b2520; }
+.rulebook-page h3 { font-size: 26px; border-bottom: 2px dotted #5c4f3d; margin-top: 15px; margin-bottom: 10px; color: #3a322b; }
+.rulebook-page p { font-size: 22px; line-height: 1.2; margin-bottom: 10px; }
+
+/* Pestañas (Tabs) laterales */
+.rulebook-tabs {
+  position: absolute;
+  right: -35px;
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rulebook-tab {
+  background: #d7c9a6;
+  border: 3px solid #000;
+  border-left: none;
+  padding: 8px 4px;
+  font: 18px 'VT323', monospace;
+  color: #2b2520;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+.rulebook-tab:hover { background: #e8dec3; }
+
+/* Botones de reglas (evidencias clicables) */
+#rulebook-rules-left, #rulebook-rules-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rulebook-page .rule-evidence {
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px dotted #5c4f3d;
+  padding: 8px 12px;
+  text-align: left;
+  font: 20px 'VT323', monospace;
+  color: #1a1613;
+  cursor: crosshair;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.rulebook-page .rule-evidence:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #000;
+}
+
+/* Explicaciones y ejemplos (Página derecha) */
+.rulebook-explanation {
+  margin-top: 20px;
+  padding: 10px;
+  border: 2px dashed #766a50;
+  background: rgba(0,0,0,0.05);
+}
+.rulebook-examples {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  margin-top: 8px;
+  background: #2b2520;
+  color: #d7c9a6;
+  padding: 8px;
+  border: 2px solid #000;
+}
+.rulebook-examples em { color: #8cdb8c; font-style: normal; }
+
+/* Comunicación de nuevos documentos (Boletín) */
+#bulletin-new-docs-container h3 {
+  font-size: 20px;
+  border-bottom: 2px solid #5c4f3d;
+  margin-bottom: 5px;
+  color: #3f3a32;
+}
+
+/* REVISION 6 — INSTRUCCIONES, TRANSCRIPCION Y DOCUMENTOS FALTANTES */
+
+/* 1. WIDEN THE DAILY INSTRUCTIONS */
+#day-instructions .instructions-panel {
+  width: 960px !important;
+  max-width: 95vw;
+  max-height: 720px;
+  display: flex;
+  flex-direction: column;
+}
+#day-instructions .instructions-panel ol {
+  column-count: 2;
+  column-gap: 40px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+#day-instructions .instructions-panel li {
+  break-inside: avoid-column;
+}
+#day-instructions .instructions-panel .action-btn {
+  margin-top: auto;
+  align-self: center;
+}
+
+/* 2. CONVERSATION TRANSCRIPT PAPER */
+#transcript-toggle {
+  position: absolute;
+  left: 6.3%;
+  bottom: 1%;
+  width: 5.4%;
+  height: 12.5%;
+  z-index: 130;
+  display: block;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+}
+#transcript-toggle:hover {
+  outline: 2px dashed rgba(255,255,255,0.4);
+  outline-offset: 2px;
+}
+
+#transcript-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 250;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.transcript-paper {
+  background: #e6e2d3;
+  width: 500px;
+  height: 600px;
+  border: 4px solid #3d352b;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 5px 5px 15px rgba(0,0,0,0.4);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'VT323', monospace;
+  color: #1a1613;
+  pointer-events: auto;
+}
+
+.transcript-paper header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px dashed #8c8273;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.transcript-paper h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+#btn-close-transcript {
+  background: #8c8273;
+  color: #fff;
+  border: 2px solid #3d352b;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+#btn-close-transcript:hover {
+  background: #3d352b;
+}
+
+#transcript-character-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#transcript-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#transcript-content::-webkit-scrollbar { width: 8px; }
+#transcript-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+#transcript-content::-webkit-scrollbar-thumb { background: #8c8273; }
+
+.transcript-line {
+  font-size: 22px;
+  line-height: 1.2;
+  padding: 4px;
+  border: 1px solid transparent;
+}
+
+.selectable-transcript:hover {
+  background: rgba(0,0,0,0.05);
+  border: 1px dotted #8c8273;
+}
+
+.transcript-help {
+  font-size: 18px;
+  text-align: center;
+  color: #5c5549;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+/* 4. MISSING DOCUMENT RECORD */
+.missing-document-record {
+  background: #eae8dc;
+  color: #1a1613;
+  font-family: 'VT323', monospace;
+  padding: 15px;
+  border: 4px double #3d352b;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.missing-document-record .field-name {
+  font-size: 24px;
+  font-weight: bold;
+  border-bottom: 1px solid #8c8273;
+  margin-bottom: 5px;
+  padding-bottom: 2px;
+}
+
+.missing-document-record .field-documentType {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #7a1d1d;
+}
+
+.missing-document-record .field-statement {
+  font-size: 18px;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.missing-document-record .field-date {
+  font-size: 16px;
+  text-align: right;
+  margin-top: auto;
+}
+
+.missing-document-record .field-status {
+  font-size: 18px;
+  border: 1px solid #3d352b;
+  padding: 2px 5px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+/* 6. BLACK-AND-WHITE IDENTITY PHOTOGRAPHS */
+.identity-document .field-photo img,
+.identity-document .document-photo {
+  filter: grayscale(1) contrast(1.12);
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* 7. BULLETIN SPACING — selectors conservados pero inactivos (IDs no existentes) */
+#bulletin-story { margin-bottom: 20px; line-height: 1.3; }
+#bulletin-lore-container h3 { margin-bottom: 5px; }
+
+/* REVISION 8 — ACTA VISIBLE Y CORRECCIONES PUNTUALES */
+
+/* Fix 4: Acta real dimensions */
+.doc-wrapper .document-card.missing-document-record,
+.document-card.missing-document-record {
+  position: relative;
+  display: block;
+  width: 480px;
+  height: 300px;
+  min-height: 300px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(70, 60, 45, 0.035) 0,
+      rgba(70, 60, 45, 0.035) 2px,
+      transparent 2px,
+      transparent 6px
+    ),
+    #e8e2c8;
+  border: 7px double #332e25;
+  padding: 34px 30px 24px;
+  color: #211d18;
+}
+
+.document-card.missing-document-record::before {
+  content: "ACTA DE DOCUMENTACIÓN FALTANTE";
+  display: block;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 3px solid #332e25;
+  font: 28px/1 "VT323", monospace;
+  text-align: center;
+}
+
+/* Override any absolute positioning from earlier rules */
+.document-card.missing-document-record .doc-field {
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  margin: 7px 0 !important;
+  font: 21px/1.1 "VT323", monospace !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+.document-card.missing-document-record .field-name::before    { content: "PERSONA: "; font-weight: bold; }
+.document-card.missing-document-record .field-documentType::before { content: "DOCUMENTO FALTANTE: "; font-weight: bold; }
+.document-card.missing-document-record .field-statement::before { content: "DECLARACIÓN: "; font-weight: bold; }
+.document-card.missing-document-record .field-date::before    { content: "FECHA: "; font-weight: bold; }
+.document-card.missing-document-record .field-status::before  { content: "ESTADO: "; font-weight: bold; }
+
+/* Fix 6: Enrollment number visibility */
+.enrollment-document .field-studentNumber,
+.enrollment-document .field-code {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 8;
+  white-space: nowrap;
+  color: #211d18;
+}
+
+/* Fix 7: Bulletin — real DOM IDs */
+#bulletin-example {
+  display: block;
+  box-sizing: border-box;
+  padding: 30px 38px;
+  overflow: hidden;
+}
+
+#bulletin-example > h3 {
+  margin: 0 0 10px;
+  font-size: 21px;
+  line-height: 1;
+}
+
+#bulletin-lore {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+#bulletin-new-docs-container {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 2px dotted #6d6658;
+}
+
+#bulletin-new-docs-container h3 {
+  margin: 0 0 9px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+#bulletin-new-docs {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+/* Fix 8: Rulebook visual refinements */
+.rulebook-page {
+  padding: 28px 36px;
+}
+
+.rulebook-page .rule-evidence {
+  margin-bottom: 8px;
+}
+
+.rulebook-tab {
+  min-width: 36px;
+  text-align: center;
+}
+
+.rulebook-page-number {
+  position: absolute;
+  bottom: 8px;
+  font: 16px "VT323", monospace;
+  color: #6b5c43;
+}
+.rulebook-page:first-child .rulebook-page-number { left: 50%; transform: translateX(-50%); }
+.rulebook-page:last-child  .rulebook-page-number { right: 50%; transform: translateX(50%); }
+
+/* REVISION 9 — FOTO DE IDENTIDAD Y ACTA GENERADA */
+.identity-document img.field-photo {
+  filter: grayscale(1) contrast(1.12) !important;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+.generated-missing-document-record {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+/* REVISION 10 — CODIGOS VISIBLES, BOLETIN Y REGLAMENTO VIGENTE */
+.field-securityCode,
+.field-fileNumber,
+.field-certificateCode,
+.field-studentNumber,
+.field-code,
+.field-passCode,
+.field-orderCode,
+.field-authorizationCode {
+  z-index: 40 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap !important;
+  padding: 2px 5px !important;
+  background: rgba(232, 226, 199, .92) !important;
+  border: 1px dotted rgba(74, 65, 52, .7) !important;
+  color: #211d18 !important;
+  line-height: 1 !important;
+}
+
+.identity-document .field-securityCode { top: 72% !important; left: 66% !important; font-size: 17px !important; }
+.admission-document .field-fileNumber { top: 64% !important; left: 9% !important; font-size: 17px !important; }
+.study-certificate-document .field-certificateCode { top: 74% !important; left: 51% !important; font-size: 17px !important; }
+.enrollment-document .field-studentNumber { top: 41% !important; left: 43% !important; font-size: 17px !important; }
+.enrollment-document .field-code { top: 72% !important; left: 59% !important; font-size: 17px !important; }
+.visitor-pass-document .field-passCode { top: 87% !important; left: 8% !important; font-size: 17px !important; }
+.service-order-document .field-orderCode { top: 88% !important; left: 8% !important; font-size: 17px !important; }
+.special-permit-document .field-authorizationCode { right: 8% !important; bottom: 7% !important; font-size: 17px !important; }
+
+#bulletin-example {
+  padding: 20px 28px !important;
+}
+#bulletin-example > h3 {
+  margin: 0 0 7px !important;
+  font-size: 19px !important;
+}
+#bulletin-lore {
+  font-size: 16px !important;
+  line-height: 1.18 !important;
+}
+#bulletin-new-docs-container {
+  margin-top: 10px !important;
+  padding-top: 8px !important;
+}
+#bulletin-new-docs-container h3 {
+  margin: 0 0 6px !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+#bulletin-new-docs {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  font-size: 15px !important;
+  line-height: 1.08 !important;
+}
+#bulletin-new-docs span::before { content: "• "; }
+
+#rulebook-rules-left,
+#rulebook-rules-right {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+#rulebook-overlay .rule-evidence {
+  margin: 0 !important;
+  padding: 8px 11px !important;
+  font-size: 19px !important;
+  line-height: 1.12 !important;
+  text-align: left !important;
+}
+/* REVISION 10B — REGLAS DEL BOLETIN EN BLOQUES LEGIBLES */
+#bulletin-rule {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+#bulletin-rule span {
+  display: block !important;
+  line-height: 1.22 !important;
+}
