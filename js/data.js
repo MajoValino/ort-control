@@ -20,7 +20,7 @@ const DAYS = [
       'Quiénes pueden ingresar: Solo estudiantes y docentes.',
       'Documentos: Estudiantes y docentes solo necesitan su documento de identidad.',
       'Campos a comparar: Asegúrese de que los datos personales coincidan.',
-      '¿Cómo se sabe si el documento es válido hoy? Hoy no hay sellos ni otro documento con el mismo código para cruzar (eso empieza el Día 2). La única verificación posible es: 1) que el documento esté presente, y 2) que el nombre que la persona declara (pregúntele) coincida con el nombre impreso. Si no encuentra ninguna de esas dos contradicciones, el caso es correcto y corresponde APROBAR.',
+      '¿Cómo se sabe si el documento es válido? Verifique que esté presente y que el nombre que la persona declara (pregúntele) coincida con el nombre impreso. Si no encuentra ninguna contradicción, corresponde APROBAR.',
       'Sellos obligatorios: No se requieren sellos adicionales hoy.',
       'Cómo seleccionar evidencia: Haga clic en un dato del documento y luego en otro para compararlos.',
       'Cuaderno de reglas: Abra el cuaderno rojo inferior para revisar reglas y usarlas como evidencia.',

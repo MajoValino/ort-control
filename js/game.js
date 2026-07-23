@@ -93,6 +93,11 @@ function loadDay(dayNumber) {
   if (typeof playGameSound === 'function') playGameSound('day');
 }
 
+function formatInstructionStep(step) {
+  const match = step.match(/^([^:?]+[:?])\s*(.*)$/s);
+  if (match && match[2]) return `<span class="instr-label">${match[1]}</span> ${match[2]}`;
+  return step;
+}
 function beginWorkDay() {
   const day = getDayData();
   showScreen('game');
@@ -103,7 +108,7 @@ function beginWorkDay() {
   quickQuestionsEl.innerHTML = '';
   setChatEnabled(false);
   instructionContextEl.textContent = day.lore;
-  instructionListEl.innerHTML = day.instructionSteps.map(step => `<li>${step}</li>`).join('');
+  instructionListEl.innerHTML = day.instructionSteps.map(step => `<li>${formatInstructionStep(step)}</li>`).join('');
   instructionEl.classList.remove('hidden');
   decisionControlsEl.classList.add('decision-collapsed');
   decisionToggleEl.setAttribute('aria-expanded', 'false');

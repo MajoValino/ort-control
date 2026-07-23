@@ -1374,9 +1374,10 @@ h1, h2, h3, p, span, button, input, li, div {
 #day-instructions .instructions-panel {
   width: 960px !important;
   max-width: 95vw;
-  max-height: 720px;
+  max-height: 800px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 #day-instructions .instructions-panel ol {
   column-count: 2;
@@ -1792,11 +1793,20 @@ h1, h2, h3, p, span, button, input, li, div {
 .instructions-panel { width: 980px !important; }
 #instructions-list {
   list-style: none !important; counter-reset: none !important; padding: 0 !important;
-  display: grid !important; grid-template-columns: 1fr 1fr !important;
-  gap: 11px 34px !important; max-height: 340px !important; overflow-y: auto !important;
+  display: flex !important; flex-direction: column !important;
+  gap: 12px !important; max-height: 480px !important; overflow-y: auto !important;
+  padding-right: 10px !important;
 }
-#instructions-list li { margin: 0 !important; padding-left: 18px; position: relative; }
-#instructions-list li::before { content: '•'; position: absolute; left: 0; color: #675e3c; }
+#instructions-list li {
+  margin: 0 !important; padding: 10px 14px 10px 16px !important; position: relative;
+  background: rgba(255,255,255,.22); border-left: 4px solid #8a7c4d;
+  font-size: 23px !important; line-height: 1.32 !important;
+}
+#instructions-list li::before { content: none; }
+#instructions-list .instr-label {
+  display: block; font-weight: bold; color: #4a3f22;
+  margin-bottom: 2px; letter-spacing: .2px;
+}
 
 #evidence-panel { overflow: hidden !important; }
 #evidence-list { overflow-wrap: anywhere !important; word-break: break-word !important; max-height: 116px !important; overflow-y: auto !important; }
