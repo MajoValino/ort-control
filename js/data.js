@@ -20,9 +20,11 @@ const DAYS = [
       'Quiénes pueden ingresar: Solo estudiantes y docentes.',
       'Documentos: Estudiantes y docentes solo necesitan su documento de identidad.',
       'Campos a comparar: Asegúrese de que los datos personales coincidan.',
+      '¿Cómo se sabe si el documento es válido hoy? Hoy no hay sellos ni otro documento con el mismo código para cruzar (eso empieza el Día 2). La única verificación posible es: 1) que el documento esté presente, y 2) que el nombre que la persona declara (pregúntele) coincida con el nombre impreso. Si no encuentra ninguna de esas dos contradicciones, el caso es correcto y corresponde APROBAR.',
       'Sellos obligatorios: No se requieren sellos adicionales hoy.',
       'Cómo seleccionar evidencia: Haga clic en un dato del documento y luego en otro para compararlos.',
       'Cuaderno de reglas: Abra el cuaderno rojo inferior para revisar reglas y usarlas como evidencia.',
+      '¿Y si NO trajo el documento? Mire el panel "DOCUMENTACIÓN": un "!" en rojo indica lo que falta. Paso a paso: 1) Pregúntele con la pregunta rápida "¿Dónde está su documento de identidad?". 2) Abra la TRANSCRIPCIÓN (papel blanco) y haga clic en su respuesta para tomarla como evidencia. 3) Abra el CUADERNO y haga clic en la regla de identidad correspondiente. 4) Pulse COMPARAR: esto genera un "Acta de Documentación Faltante". 5) Arrastre esa acta a la mesa de inspección, selecciónela y aplíquele el sello DENEGADO.',
       'Sellar: Abra la bandeja de sellos abajo a la derecha y aplique APROBADO o DENEGADO.'
     ],
     receptionistLore: 'Primer día en Admisiones. El flujo fue tranquilo, pero Rectorado dejó claro que cada omisión quedará registrada en su legajo.',
@@ -50,7 +52,8 @@ const DAYS = [
       'Aspirante nuevo requiere carta de admisión.',
       'Estudiante regular requiere constancia de inscripción y certificado de estudios.',
       'Los códigos ORT-, ADM-, ACA- e INS- deben compartir los mismos 4 dígitos finales.',
-      'Use el cuaderno para comparar evidencias antes de decidir.'
+      'Use el cuaderno para comparar evidencias antes de decidir.',
+      'Recordatorio — documento faltante: si falta un documento entero (no solo un dato mal), repita el procedimiento del Día 1: pregunte, use la transcripción y el reglamento, genere el Acta, séllela.'
     ],
     receptionistLore: 'El rumor sobre documentos alterados aumentó la tensión. Algunos aspirantes culpan al sistema; otros parecen conocer demasiado bien sus fallas.',
     characterIds: ['student-02', 'student-05', 'student-06', 'student-09', 'valerys-02']
@@ -76,7 +79,8 @@ const DAYS = [
       'Exija identidad y el permiso exacto para su categoría.',
       'Compare área, motivo, fecha y los últimos 4 dígitos.',
       'Verifique el sello de Administración.',
-      'Use la evidencia y el cuaderno antes de sellar.'
+      'Use la evidencia y el cuaderno antes de sellar.',
+      'Recordatorio — documento faltante: mismo procedimiento que el Día 1 (preguntar, transcripción, cuaderno, comparar, Acta).'
     ],
     receptionistLore: 'La oficina ya no parece una simple recepción. Sus decisiones empezaron a afectar a estudiantes, docentes y personal externo, y Dirección observa sus resultados.',
     characterIds: ['visitor-01', 'visitor-02', 'provider-01', 'provider-02', 'valerys-03']
@@ -90,7 +94,7 @@ const DAYS = [
     reminder: ['Un espacio vacío no equivale a un sello válido.', 'Seleccione el sello o el campo sospechoso y compárelo con la regla.'],
     introducedDocuments: ['specialPermit'],
     allowedRoles: ['estudiante', 'docente', 'administrativo', 'visitante'],
-    instructionSteps: ['Revise las reglas acumuladas en el cuaderno.', 'Toda excepción exige identidad y permiso especial.', 'Compare nombre, fecha, autoridad y cuatro dígitos.', 'Verifique visualmente el sello Institucional válido.', 'Los permisos sin sello o con autoridad incorrecta deben denegarse.'],
+    instructionSteps: ['Revise las reglas acumuladas en el cuaderno.', 'Toda excepción exige identidad y permiso especial.', 'Compare nombre, fecha, autoridad y cuatro dígitos.', 'Verifique visualmente el sello Institucional válido.', 'Los permisos sin sello o con autoridad incorrecta deben denegarse.', 'Recordatorio — documento faltante: mismo procedimiento que el Día 1 (preguntar, transcripción, cuaderno, comparar, Acta).'],
     receptionistLore: 'Los permisos falsos no parecían obra de estudiantes improvisados. Alguien conocía los formularios internos y Dirección comenzó a revisar cada decisión de la oficina.',
     characterIds: ['admin-01', 'visitor-03', 'student-07', 'teacher-02', 'valerys-04']
   },
@@ -103,7 +107,7 @@ const DAYS = [
     reminder: ['Consulte el cuaderno antes de decidir.', 'Una decisión humana también deja consecuencias.'],
     introducedDocuments: [],
     allowedRoles: ['estudiante', 'docente', 'visitante', 'proveedor', 'administrativo'],
-    instructionSteps: ['Aplique todas las reglas de los días anteriores.', 'Identifique primero la categoría de cada persona.', 'Exija los documentos exactos indicados en el cuaderno.', 'Compare los cuatro dígitos, fechas, áreas y sellos.', 'La auditoría evaluará precisión, seguridad y criterio.'],
+    instructionSteps: ['Aplique todas las reglas de los días anteriores.', 'Identifique primero la categoría de cada persona.', 'Exija los documentos exactos indicados en el cuaderno.', 'Compare los cuatro dígitos, fechas, áreas y sellos.', 'La auditoría evaluará precisión, seguridad y criterio.', 'Recordatorio — documento faltante: mismo procedimiento de siempre (preguntar, transcripción, cuaderno, comparar, Acta).'],
     receptionistLore: 'La oficina quedó en silencio cuando llegó el último expediente. Ya no se evaluaban únicamente documentos: también se evaluaba la forma en que usted había usado el poder del puesto.',
     characterIds: ['student-10', 'visitor-04', 'provider-03', 'admin-02', 'valerys-05']
   }

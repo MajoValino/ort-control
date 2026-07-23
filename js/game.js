@@ -399,8 +399,9 @@ function compareEvidence() {
     }
 
     if (rule.ruleType === 'identity') {
-      discrepancy = field.field === 'missingIdentity' || field.value === 'AUSENTE';
-      message = discrepancy ? 'DISCREPANCIA: falta la identidad obligatoria.' : 'La evidencia no contradice esta regla.';
+      const missing = field.field === 'missingIdentity' || field.value === 'AUSENTE';
+      discrepancy = missing || Boolean(field.isActualError);
+      message = missing ? 'DISCREPANCIA: falta la identidad obligatoria.' : discrepancy ? 'DISCREPANCIA: el dato no coincide con la identidad declarada.' : 'La evidencia no contradice esta regla.';
     } else if (rule.ruleType === 'code') {
       comparable = /code|number|file/i.test(field.field || '');
       discrepancy = field.isActualError;
