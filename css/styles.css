@@ -1729,7 +1729,7 @@ h1, h2, h3, p, span, button, input, li, div {
 .enrollment-document .field-code { top: 71% !important; left: 68% !important; font-size: 17px !important; }
 .visitor-pass-document .field-passCode {  left: 74% !important; font-size: 17px !important; }
 .service-order-document .field-orderCode { top: 88% !important; left: 8% !important; font-size: 17px !important; }
-.special-permit-document .field-authorizationCode { right: 8% !important; bottom: 7% !important; font-size: 17px !important; }
+.special-permit-document .field-authorizationCode { right: 14% !important; bottom: 8% !important; font-size: 17px !important; }
 
 #bulletin-example {
   padding: 20px 28px !important;
@@ -1885,18 +1885,18 @@ h1, h2, h3, p, span, button, input, li, div {
 .valid-stamps-grid figcaption { font-size: 11px !important; }
 /* REVISION 12 — ALINEACION DEL PERMISO ESPECIAL */
 .special-permit-document .field-name {
-  top: 42.2% !important; left: 43% !important; max-width: 48% !important;
+  top: 34% !important; left: 37% !important; max-width: 55% !important;
   font-size: 16px !important; white-space: nowrap !important;
 }
 .special-permit-document .field-exceptionType {
-  top: 47.5% !important; left: 43% !important; max-width: 48% !important;
+left: 37% !important; max-width: 55% !important;
   font-size: 15px !important; white-space: nowrap !important;
 }
 .special-permit-document .field-date {
-  top: 56.5% !important; left: 47% !important; font-size: 15px !important;
+  left: 50% !important; max-width: 42% !important; font-size: 15px !important;
 }
 .special-permit-document .field-authorizingAuthority {
-  top: 61.2% !important; left: 45% !important; max-width: 45% !important;
+  top: 52% !important; left: 45.5% !important; max-width: 46% !important;
   font-size: 14px !important; white-space: nowrap !important;
 }
 .special-permit-document .field-observations {
@@ -1904,14 +1904,11 @@ h1, h2, h3, p, span, button, input, li, div {
   font-size: 13px !important; white-space: nowrap !important;
 }
 .special-permit-document .field-signature {
-  top: 82.5% !important; left: 61% !important; max-width: 30% !important;
-  font-size: 12px !important; text-align: center !important;
+  top: 76% !important; left: 58% !important; max-width: 33% !important;
+  font-size: 12px !important; text-align: center !important; white-space: nowrap !important;
 }
-.special-permit-document .field-authorizationCode {
-  top: auto !important; right: 7% !important; bottom: 7.5% !important;
-  font-size: 14px !important;
-}
+
 .special-permit-document .institutional-stamp {
-  top: 71.5% !important; left: 9% !important; width: 35% !important; height: 15% !important;
+  top: 67% !important; left: 9% !important; width: 35% !important; height: 15% !important;
   object-fit: contain !important;
 }
